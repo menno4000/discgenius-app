@@ -24,11 +24,12 @@
         <label class="songInfo">number of songs: {{ numSongs1 }}</label>
       </div>
       <div v-if="length1 > 0">
-        <v-slider v-model="exitPoint"
-                  max="100"
-                  min="0"
-                  hint="Exit Point"
-                  class="entryPointSlider"/>
+        <input type="range"
+               v-model="exitPoint"
+               max="100"
+               min="1"
+               hint="Exit Point"
+               class="entryPointSlider"/>
         <label class="entryPointLabel">
           {{ convertExitPoint }}
         </label>
@@ -52,11 +53,12 @@
         <label class="songInfo">number of songs: {{ numSongs2 }}</label>
       </div>
       <div v-if="length2 > 0">
-        <v-slider v-model="entryPoint"
-                  max="100"
-                  min="0"
-                  hint="Entry Point"
-                  class="entryPointSlider"/>
+        <input type="range"
+               v-model="entryPoint"
+               max="100"
+               min="0"
+               hint="Entry Point"
+               class="entryPointSlider"/>
         <label class="entryPointLabel">
           {{ convertEntryPoint }}
         </label>
@@ -73,7 +75,24 @@
         <span>2. Select a Mix Scenario</span>
       </div>
       <div>
-        <img class="legend" src="@/assets/legend.png"/>
+        <div class="scenarioExplanation">
+          <div>
+            <label class="scenarioExplanationLabel">
+              Select one of the available pre-defined Mix Scenarios with the Buttons below.
+            </label>
+          </div>
+          <div>
+            <label>
+              Each Scenario represents volume control for both tracks' High-, Mid- and Low-Frequency-Bands, similar to
+              how a Three-Band-EQ functions in state-of-the-art DJ equipment.
+            </label>
+          </div>
+        </div>
+        <div class="scenarioLegend">
+          <img width="140px"
+               height="140px"
+               src="@/assets/legend.png"/>
+        </div>
       </div>
       <div>
         <div class="scenarioBlock">
@@ -160,8 +179,10 @@
 import Song from '../model/Song'
 import Mix from '../model/Mix'
 import {v4 as uuidv4} from 'uuid'
+import LoginState from "@/components/LoginState";
 
 export default {
+  components: {LoginState},
   data() {
     return {
       selected1: new Song("stub", 0.0, 0.0, "0"),
@@ -306,9 +327,40 @@ export default {
 }
 
 .entryPointSlider {
+  -webkit-appearance: none; /* Override default CSS styles */
+  appearance: none;
+  height: 25px; /* Specified height */
+  color: #76b900;
+  background: #d3d3d3; /* Grey background */
+  outline: none; /* Remove outline */
+  opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+  -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+  transition: opacity .2s;
   display: inline-block;
   vertical-align: middle;
   width: 200px;
+}
+
+/* Mouse-over effects */
+.entryPointSlider:hover {
+  opacity: 1; /* Fully shown on mouse-over */
+}
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */
+.entryPointSlider::-webkit-slider-thumb {
+  -webkit-appearance: none; /* Override default look */
+  appearance: none;
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  background: #4CAF50; /* Green background */
+  cursor: pointer; /* Cursor on hover */
+}
+
+.entryPointSlider::-moz-range-thumb {
+  width: 25px; /* Set a specific slider handle width */
+  height: 25px; /* Slider handle height */
+  background: #4CAF50; /* Green background */
+  cursor: pointer; /* Cursor on hover */
 }
 
 .entryPointLabel {
@@ -343,13 +395,15 @@ export default {
   width: 40%;
   margin: 10px;
 }
+
 .scenarioBlock {
   display: inline-block;
   height: 30%;
   width: 40%;
   margin: 10px;
 }
-.scenarioName{
+
+.scenarioName {
   display: inline-block;
   height: 30px;
   width: 40%;
@@ -357,9 +411,20 @@ export default {
   text-align: center;
 }
 
-.legend {
-  width: 140px;
+.scenarioExplanation {
+  display: inline-block;
+  align-content: center;
+  width: 40%;
   height: 140px;
+  margin-right: 10px;
+  text-align: center;
+}
+.scenarioExplanationLabel{
+  margin-bottom: 10px;
+}
+.scenarioLegend {
+  display: inline-block;
+  align-content: center;
 }
 
 .scenarioButton {
@@ -368,25 +433,31 @@ export default {
   margin: 10px;
   border-radius: 4px;
 }
+
 .scenarioButton:disabled {
   background-color: white;
   width: 100%;
   margin: 10px;
 }
+
 .scenarioPreview {
+  padding: 10px;
   height: 100%;
   width: 100%;
   align-content: center;
 }
+
 .mixNameInput {
   align-content: center;
   flex-basis: 100px;
 }
+
 .mixSubmit {
   margin: 10px;
   display: inline-block;
   vertical-align: middle;
 }
+
 .submitButton {
   color: white;
   font-size: 16px;
@@ -395,6 +466,7 @@ export default {
   padding: 15px 30px;
   border-radius: 4px;
 }
+
 .submitButton:disabled {
   color: white;
   font-size: 16px;
@@ -403,15 +475,18 @@ export default {
   padding: 10px 20px;
   border-radius: 4px;
 }
+
 .mixProgress {
   display: inline-block;
   vertical-align: middle;
 }
+
 .mixDownload {
   margin: 10px;
   display: inline-block;
   vertical-align: middle;
 }
+
 .downloadButton {
   color: white;
   font-size: 16px;
@@ -420,6 +495,7 @@ export default {
   padding: 15px 30px;
   border-radius: 4px;
 }
+
 .downloadButton:disabled {
   color: white;
   font-size: 16px;
