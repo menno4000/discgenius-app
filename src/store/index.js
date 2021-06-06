@@ -33,8 +33,23 @@ export default new Vuex.Store({
     logout(state){
       state.authState = false
     },
-    incrementProgress(state){
-      state.currentProgress++;
+    incrementProgress(state) {
+      state.currentProgress += 10;
+    },
+    increaseProgress(state, progress){
+      state.currentProgress += progress;
+    },
+    updateMixProgress(state, payload){
+      console.log(payload.mixTitle)
+      console.log('old mixes', state.mixes)
+      let mix = state.mixes.find(x => x.title === payload.mixTitle)
+      console.log(mix)
+      console.log('mix progress', mix.progress)
+      mix.progress = mix.progress + payload.amount
+      console.log('mix progress', mix.progress)
+      let new_mixes = [...state.mixes.filter(x => x.title !== payload.mixTitle), mix]
+      console.log('new mixes', new_mixes)
+      state.mixes = new_mixes
     },
     setMixes(state, {current_mixes}){
       state.mixes = current_mixes;
@@ -56,22 +71,58 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    submitMix(context, payload){
-      const {mix} = payload
-      context.commit("addMix", mix)
+    async submitMix(context, payload){
+      const {newMix} = payload
+      context.state.mixes.forEach(mix => console.log(mix))
+      context.commit("addMix", newMix)
+      // function fakeProgressLoop(){
+      //   setTimeout(function(){
+      //     context.commit("incrementProgress")
+      //     // context.commit("increaseProgress", 10)
+      //     if(context.state.currentProgress < 100){
+      //       context.state.mixes.forEach(() => {
+      //         context.commit({
+      //           type: "updateMixProgress",
+      //           mixId: newMix.id,
+      //           amount: 1
+      //         })
+      //       })
+      //       fakeProgressLoop()
+      //     }
+      //   },1000)
+      // }
+      await context.dispatch('fakeProgressLoop', payload);
+    },
+    async fakeProgressLoop(context, payload){
+      let {newMix} = payload
+      function progressLoop(){
+        setTimeout(function(){
+          // context.commit("incrementProgress")
+          context.commit("increaseProgress", 10)
+          context.commit({
+            type: "updateMixProgress",
+            mixTitle: newMix.title,
+            amount: 10
+          })
+          if (context.state.currentProgress < 100){
+            progressLoop()
+          }
+        },1000)
+      }
+      progressLoop()
     },
     deleteMix(context, payload){
-      const {mix} = payload
-      context.commit("deleteMix", mix)
+      const {newMix} = payload
+      context.commit("deleteMix", newMix)
     },
     fakeProgress(context){
       function fakeProgressLoop(){
         setTimeout(function(){
-          context.commit('incrementProgress')
-          if(this.state.currentProgress < 100){
+          context.commit('incrementProgress', context.state)
+          if(context.state.currentProgress < 100){
             fakeProgressLoop()
           }
-        },100)
+        },10000)
       }
       fakeProgressLoop();
     }
