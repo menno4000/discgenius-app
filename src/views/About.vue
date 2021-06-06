@@ -40,6 +40,19 @@
     </div>
     <div class="spacer"/>
     <div>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLScEs4FB9LakvCr2D_jM3kfy4AO7TzKUlNWXKlR_afcbLt8hQg/viewform?usp=sf_link">
+        Fragebogen Heuritische Evaluation
+      </a>
+    </div>
+    <div>
+      <span>Wenn ihr meiner Note helfen wollt:</span>
+    </div>
+    <div>
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSfJNuUcNzDqzZjd-GzLfD7gI3oNLeAdIntuETfIYbaz9R6ANw/viewform?usp=sf_link">
+        Demografie-Fragebogen
+      </a>
+    </div>
+    <div>
       <span>
         2021 Max Lüdemann
       </span>

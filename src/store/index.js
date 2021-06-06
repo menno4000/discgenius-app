@@ -40,22 +40,15 @@ export default new Vuex.Store({
       state.currentProgress += progress;
     },
     updateMixProgress(state, payload){
-      console.log(payload.mixTitle)
-      console.log('old mixes', state.mixes)
       let mix = state.mixes.find(x => x.title === payload.mixTitle)
-      console.log(mix)
-      console.log('mix progress', mix.progress)
       mix.progress = mix.progress + payload.amount
-      console.log('mix progress', mix.progress)
-      let new_mixes = [...state.mixes.filter(x => x.title !== payload.mixTitle), mix]
-      console.log('new mixes', new_mixes)
-      state.mixes = new_mixes
+      state.mixes = [...state.mixes.filter(x => x.title !== payload.mixTitle), mix]
     },
     setMixes(state, {current_mixes}){
       state.mixes = current_mixes;
     },
-    setAvailableMixes(state, {available_mixes}){
-      state.availableMixes = available_mixes;
+    refreshAvailableMixes(state){
+      state.availableMixes = [...state.mixes.filter(x=>x.progress >= 100)];
     },
     addMix(state, mix){
       state.mixes.push(mix);
@@ -75,35 +68,19 @@ export default new Vuex.Store({
       const {newMix} = payload
       context.state.mixes.forEach(mix => console.log(mix))
       context.commit("addMix", newMix)
-      // function fakeProgressLoop(){
-      //   setTimeout(function(){
-      //     context.commit("incrementProgress")
-      //     // context.commit("increaseProgress", 10)
-      //     if(context.state.currentProgress < 100){
-      //       context.state.mixes.forEach(() => {
-      //         context.commit({
-      //           type: "updateMixProgress",
-      //           mixId: newMix.id,
-      //           amount: 1
-      //         })
-      //       })
-      //       fakeProgressLoop()
-      //     }
-      //   },1000)
-      // }
       await context.dispatch('fakeProgressLoop', payload);
     },
     async fakeProgressLoop(context, payload){
       let {newMix} = payload
       function progressLoop(){
         setTimeout(function(){
-          // context.commit("incrementProgress")
           context.commit("increaseProgress", 10)
           context.commit({
             type: "updateMixProgress",
             mixTitle: newMix.title,
             amount: 10
           })
+          context.commit("refreshAvailableMixes")
           if (context.state.currentProgress < 100){
             progressLoop()
           }

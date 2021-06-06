@@ -45,12 +45,6 @@ export default{
       return mixesWithProg
     }
   },
-  // created() {
-  //   this.$store.dispatch('fetchMixes');
-  // },
-  // mounted() {
-  //
-  // }
 }
 </script>
 
@@ -68,7 +62,7 @@ export default{
   text-align: left;
   vertical-align: middle;
   margin-left: 10%;
-  width: 25%;
+  width: 200px;
 }
 .mixTempoLabel{
   display: inline-block;

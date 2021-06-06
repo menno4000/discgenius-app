@@ -297,10 +297,6 @@ export default {
       this.$store.dispatch('submitMix', {newMix})
     }
   },
-  // beforeCreate() {
-  //   this.$store.dispatch('fetchMixes')
-  //   this.$store.dispatch('fetchAvailableMixes')
-  // }
 }
 </script>
 
