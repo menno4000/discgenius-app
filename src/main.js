@@ -4,9 +4,11 @@ import router from './router'
 import store from './store'
 import VueEllipseProgress from 'vue-ellipse-progress'
 import vuetify from './plugins/vuetify'
+import vueSmoothScroll from 'vue-smoothscroll'
 
 Vue.config.productionTip = false
 Vue.use(VueEllipseProgress);
+Vue.use(vueSmoothScroll)
 
 new Vue({
   router,

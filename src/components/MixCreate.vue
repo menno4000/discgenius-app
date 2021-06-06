@@ -70,7 +70,9 @@
                :disabled="tempoOverride === false"/>
       </div>
     </div>
-    <div id="previewSelect" v-if="songsSelected">
+    <div id="previewSelect"
+         v-if="songsSelected"
+         v-smoothscroll="{duration: 500, context: undefined, axis:'y'}">
       <div class="stepDescription">
         <span>2. Select a Mix Scenario</span>
       </div>
@@ -84,7 +86,7 @@
           <div>
             <label>
               Each Scenario represents volume control for both tracks' High-, Mid- and Low-Frequency-Bands, similar to
-              how a Three-Band-EQ functions in state-of-the-art DJ equipment.
+              how a Three-Band-EQ functions in standard DJ equipment.
             </label>
           </div>
         </div>
@@ -143,13 +145,19 @@
         </div>
       </div>
     </div>
-    <div id="mixNameAndSend" v-if="previewSelected">
+    <div id="mixNameAndSend"
+         v-if="previewSelected"
+         v-smoothscroll="{duration: 500, context: undefined, axis:'y'}">
       <div class="stepDescription">
         <label>3. Name the Mix, Hit Submit and Download when it's ready</label>
       </div>
       <div class="flexContainer">
         <div class="mixSubmit">
-          <input class="mixNameInput" v-model="mixName" placeholder="Mix Name"/>
+          <input ref="mixName"
+                 v-if="previewSelected"
+                 class="mixNameInput"
+                 v-model="mixName"
+                 placeholder="Mix Name"/>
         </div>
         <div class="mixSubmit">
           <button class="submitButton"
@@ -218,9 +226,6 @@ export default {
     mixes() {
       return this.$store.getters.getAvailableMixes
     },
-    numOptions() {
-      return (this.mixes.length + this.songs.length);
-    },
     calcedProgress() {
       return this.$store.state.currentProgress;
     },
@@ -244,6 +249,7 @@ export default {
     },
     newMixLength() {
       let adjustedSong2Length = (this.tempo1 / this.tempo2) * this.length2;
+      adjustedSong2Length = Math.round(adjustedSong2Length * 100) / 100
       return this.length1 + adjustedSong2Length;
     },
     newMix() {
@@ -275,7 +281,10 @@ export default {
       let numSongs = 0;
       if (this.length1 > 0) numSongs++;
       if (this.length2 > 0) numSongs++;
-      if (numSongs === 2) this.songsSelected = true
+      if (numSongs === 2) {
+        this.songsSelected = true
+
+      }
     },
     selectScenario(pName) {
       this.scenario = pName;
@@ -284,8 +293,8 @@ export default {
     submit() {
       this.submitted = true;
       this.$store.dispatch('fakeProgress')
-      let newMix = new Mix(this.mixName, this.newMixLength, this.mixNumSongs, this.mixTempo, uuidv4())
-      this.$store.dispatch('submitMix', newMix)
+      let newMix = new Mix(this.mixName, this.newMixLength, this.mixNumSongs, this.mixTempo, uuidv4(), 1)
+      this.$store.dispatch('submitMix', {newMix})
     }
   },
   // beforeCreate() {
@@ -413,15 +422,16 @@ export default {
 
 .scenarioExplanation {
   display: inline-block;
-  align-content: center;
   width: 40%;
   height: 140px;
   margin-right: 10px;
   text-align: center;
 }
-.scenarioExplanationLabel{
-  margin-bottom: 10px;
+
+.scenarioExplanationLabel {
+  padding: 20px;
 }
+
 .scenarioLegend {
   display: inline-block;
   align-content: center;
