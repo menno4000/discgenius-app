@@ -41,7 +41,7 @@
     <div class="spacer"/>
     <div>
       <a href="https://docs.google.com/forms/d/e/1FAIpQLScEs4FB9LakvCr2D_jM3kfy4AO7TzKUlNWXKlR_afcbLt8hQg/viewform?usp=sf_link">
-        Fragebogen Heuritische Evaluation
+        Fragebogen Heuristische Evaluation
       </a>
     </div>
     <div>
