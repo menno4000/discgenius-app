@@ -16,15 +16,15 @@
 export default{
   computed:{
     authState(){
-      return this.$store.state.authState;
+      return this.$store.getters["accountStore/isLoggedIn"];
     },
     username() {
-      return this.$store.state.username;
+      return this.$store.getters["accountStore/getUser"];
     }
   },
   methods: {
     doLogin() {
-      this.$store.commit("login")
+      this.$router.push('/login')
     }
   }
 }

@@ -2,25 +2,24 @@ import axios from 'axios';
 
 const API_URL = 'http://localhost:9001/auth/';
 
-export const userService = {
+export default {
     login,
     logout,
     register
 };
 
-function login(user){
+function login(username, password){
     const formData = new FormData();
-    formData.append('email', user.email)
-    formData.append('password', user.password)
+    formData.append('username', username)
+    formData.append('password', password)
     return axios
-        .post(API_URL+'jwt/login', {
-            email: user.email,
-            password: user.password
-        }).then(response => {
-            if (response.data.accessToken) {
-                localStorage.setItem('user', JSON.stringify())
+        .post(API_URL+'jwt/login', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
             }
-            return response.data;
+        })
+        .then(response => {
+            return response
         });
 }
 function logout() {
@@ -30,7 +29,9 @@ function register(user){
     return axios.post(API_URL+'/register', {
         email: user.email,
         password: user.password
-    });
+    })
+    .then((response) => console.log(response))
+    .catch((error) => console.log(error));
 }
 
 function handleResponse(response) {

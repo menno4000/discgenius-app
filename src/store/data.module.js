@@ -1,4 +1,4 @@
-import { UserService } from '../services/user.service';
+import { UserService } from '../services/UserService';
 
 const user = JSON.parse(localStorage.getItem('user'))
 const initialState = user

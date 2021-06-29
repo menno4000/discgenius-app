@@ -28,19 +28,21 @@ const routes = [
 ]
 
 const router = new VueRouter({
+  mode: "history",
+  base: process.env.BASE_URL,
   routes
 })
 
-router.beforeEach((to, from, next) => {
-  const publicPages = ['/login', '/register']
-  const authRequired = !publicPages.includes(to.path)
-  const loggedIn = localStorage.getItem('user')
-
-  if (authRequired && !loggedIn){
-    return next('/login')
-  }
-  next()
-})
+// router.beforeEach((to, from, next) => {
+//   const publicPages = ['/login', '/register']
+//   const authRequired = !publicPages.includes(to.path)
+//   const loggedIn = localStorage.getItem('user')
+//
+//   if (authRequired && !loggedIn){
+//     return next('/login')
+//   }
+//   next()
+// })
 
 
 export default router

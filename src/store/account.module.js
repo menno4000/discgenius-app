@@ -1,29 +1,42 @@
-import {userService, UserService} from '../services/user.service'
+import {userService} from '@/services/UserService'
 import {router} from '../router'
+import createPersistedState from 'vuex-persistedstate'
+import Axios from 'axios'
 
-const user = JSON.parse(localStorage.getItem('user'))
-const initialState = user
-    ? { status: {loggedIn: true}, user}
-    : { status: {}, user: null}
+const getDefaultState = () => {
+    return {
+        token: '',
+        user: {}
+    };
+};
 
 const actions = {
-    login({dispatch, commit}, {username, password}) {
-        commit('loginRequest', {username});
-        userService.login(username, password)
-            .then(
-                user => {
-                    commit('loginSuccess', user)
-                    router.push('/')
-                },
-                error => {
-                    commit('loginFailure', error);
-                    dispatch('alert/error', error, {root:true})
-                }
-            )
+    // login({dispatch, commit}, {username, password}) {
+    //     commit('loginRequest', {username});
+    //     userService.login(username, password)
+    //         .then(
+    //             user => {
+    //                 commit('loginSuccess', user)
+    //                 router.push('/')
+    //             },
+    //             error => {
+    //                 commit('loginFailure', error);
+    //                 dispatch('alert/error', error, {root:true})
+    //             }
+    //         )
+    // },
+    login: ({commit, dispatch}, {token, user}) => {
+        commit('SET_TOKEN', token);
+        commit('SET_USER', user);
+
+        Axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
     },
-    logout({commit}){
-        userService.logout()
-        commit('logout')
+    // logout({commit}){
+    //     userService.logout()
+    //     commit('logout')
+    // },
+    logout: ({commit}) => {
+        commit('RESET', '')
     },
     register({dispatch, commit}, user) {
         commit('registerRequest', user);
@@ -43,19 +56,37 @@ const actions = {
     }
 }
 
+const getters = {
+    isLoggedIn: state => {
+        return !!state.token;
+    },
+    getUser: state => {
+        return state.user;
+    }
+}
+
 const mutations = {
-    loginRequest(state, user) {
-        state.status = { loggingIn: true };
+    SET_TOKEN: (state, token) => {
+        state.token = token;
+    },
+    SET_USER: (state, user) => {
         state.user = user;
     },
-    loginSuccess(state, user) {
-        state.status = { loggedIn: true };
-        state.user = user;
+    RESET: state => {
+        Object.assign(state, getDefaultState());
     },
-    loginFailure(state) {
-        state.status = {};
-        state.user = null;
-    },
+    // loginRequest(state, user) {
+    //     state.status = { loggingIn: true };
+    //     state.user = user;
+    // },
+    // loginSuccess(state, user) {
+    //     state.status = { loggedIn: true };
+    //     state.user = user;
+    // },
+    // loginFailure(state) {
+    //     state.status = {};
+    //     state.user = null;
+    // },
     logout(state) {
         state.status = {};
         state.user = null;
@@ -73,8 +104,11 @@ const mutations = {
 }
 
 export const accountStore = {
+    strict: true,
+    plugins: [createPersistedState()],
     namespaced: true,
-    initialState,
+    state: getDefaultState(),
+    getters: getters,
     actions,
     mutations
 }
