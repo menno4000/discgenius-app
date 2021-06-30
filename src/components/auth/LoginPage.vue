@@ -2,15 +2,19 @@
   <div>
     <h2>Login</h2>
     <form @submit.prevent="handleSubmit">
-      <div class="form-group">
-        <label class="login label">Username</label>
-        <input type="text" v-model="username" name="username" class="form-control" :class="{ 'is-invalid': submitted && !username }" />
-        <div v-show="submitted && !username" class="invalid-feedback">Username is required</div>
-      </div>
-      <div class="form-group">
-        <label class="login label">Password</label>
-        <input type="password" v-model="password" name="password" class="form-control" :class="{ 'is-invalid': submitted && !password }" />
-        <div v-show="submitted && !password" class="invalid-feedback">Password is required</div>
+      <div class="grid-container">
+        <div class="grid-item">
+          <label class="login label">Username</label>
+        </div>
+        <div class="grid-item">
+          <input type="text" v-model="username" name="username" class="form-control" :class="{ 'is-invalid': submitted && !username }" />
+        </div>
+        <div class="grid-item">
+          <label class="login label">Password</label>
+        </div>
+        <div class="grid-item">
+          <input type="password" v-model="password" name="password" class="form-control" :class="{ 'is-invalid': submitted && !password }" />
+        </div>
       </div>
       <div class="form-group">
         <button class="btn btn-primary" :disabled="!username">Login</button>
@@ -23,7 +27,6 @@
 
 <script>
 import UserService from '@/services/UserService'
-import { mapState, mapActions } from 'vuex'
 
 export default {
   data () {
@@ -63,14 +66,23 @@ export default {
 </script>
 
 <style scoped>
-.form-group {
-  margin: 5px
+.form-control {
+  outline-style: solid;
+  outline-width: thin;
+  width: 250px;
 }
-.form-control{
-  margin-left: 5px;
+.grid-container {
+  display: grid;
+  grid-template-columns: auto auto;
+  padding: 10px;
+}
+.grid-item {
+  padding: 10px;
+  text-align: center;
 }
 .btn.btn-link{
   margin-left: 5px;
+  margin-right: 5px;
 }
 
 </style>

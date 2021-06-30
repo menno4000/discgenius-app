@@ -4,6 +4,7 @@ import Song from "@/model/Song";
 import Mix from "@/model/Mix";
 import {accountStore} from './account.module'
 import {dataStore} from './data.module'
+import createPersistedState from 'vuex-persistedstate';
 
 Vue.use(Vuex)
 
@@ -109,5 +110,6 @@ export default new Vuex.Store({
   modules: {
     accountStore,
     dataStore
-  }
+  },
+  plugins: [createPersistedState()]
 })
