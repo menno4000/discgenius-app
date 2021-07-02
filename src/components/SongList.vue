@@ -48,6 +48,9 @@ export default {
       return this.$store.getters.getSongs;
     }
   },
+  created() {
+    this.$store.dispatch('fetchSongs')
+  },
   methods: {
     deleteSong(song){
 
@@ -57,7 +60,6 @@ export default {
     },
     handleFileUpload(){
       this.file = this.$refs.songFile.files[0]
-      console.log(this.file)
     },
     async uploadSong(song){
       const song_filename = this.file.name
@@ -68,13 +70,16 @@ export default {
       if (song_response === undefined) {
         alert("Song upload failed")
       } else {
+        console.log(song_response)
         const song = new Song(
-            song_response.data['title'],
-            song_response.data['length'],
-            song_response.data['bpm'],
-            song_response.data['id']
+            song_response.data.title,
+            song_response.data.length,
+            song_response.data.bpm,
+            song_response.data.id
         )
         await this.$store.commit('addSong', song)
+        this.uploading = false
+        await this.$store.dispatch("fetchSongs")
       }
     }
   }

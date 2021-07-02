@@ -15,21 +15,20 @@ export default {
 
 //TODO remove excessive console logging
 function uploadSong(filename, extension, file) {
-    console.log(filename, extension, file)
     const params = {
         filename: filename,
         extension: extension
     }
-    let formData = new FormData()
-    formData.append('file', file)
+    // let formData = new FormData()
+    // formData.append('file', file)
     return axios.post(
         API_URL+'upload',
-        formData,
+        file,
         {
             params: params,
         }
     ).then(function (response){
-        console.log(response)
+        // console.log(response)
         return response
     }).catch(function (error) {
         console.log(error)

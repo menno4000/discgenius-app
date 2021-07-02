@@ -68,7 +68,7 @@ const actions =  {
     }
     fakeProgressLoop();
   },
-  async getSongs(context){
+  async fetchSongs(context){
     const song_response = await DataService.getSongs()
     const song_data = song_response.data.data[0]
     let _songs = [];
@@ -82,7 +82,7 @@ const actions =  {
     })
     context.commit("setSongs", _songs)
   },
-  async getMixes(context){
+  async fetchMixes(context){
     const mixes_response = await DataService.getMixes()
     const mixes_data = mixes_response.data.data[0]
     let _mixes = []
@@ -105,8 +105,8 @@ const actions =  {
     commit('SET_USER', user);
 
     Axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-    dispatch('getSongs')
-    dispatch('getMixes')
+    dispatch('fetchSongs')
+    dispatch('fetchMixes')
   },
   logout: ({commit}) => {
     commit('RESET', '')
