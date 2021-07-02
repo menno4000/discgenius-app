@@ -1,10 +1,23 @@
 <template>
   <div>
     <div class="spacer"/>
-    <div>
-      <button class="uploadButton" v-on:click="uploadSong()">
+    <div v-if="!uploading">
+      <button class="uploadButton" v-on:click="startUpload()">
         Upload New Song
       </button>
+    </div>
+    <div v-else-if="uploading">
+      <div class="songUploadDiv">
+        <label>
+          Song File
+          <input type="file" id="songFile" ref="songFile" @change="handleFileUpload"/>
+        </label>
+      </div>
+      <div class="songUploadDiv">
+        <button class="uploadButton" v-on:click="uploadSong()">
+          Upload
+        </button>
+      </div>
     </div>
     <div v-for="song in songs" :key="song.id">
       <div class="songDiv">
@@ -21,19 +34,48 @@
 
 <script >
 import Song from "../model/Song";
+import DataService from "@/services/DataService";
 
 export default {
+  data() {
+    return {
+      uploading: false,
+      file: ''
+    }
+  },
   computed: {
     songs(){
-      return this.$store.state.songs;
+      return this.$store.getters.getSongs;
     }
   },
   methods: {
     deleteSong(song){
 
     },
-    uploadSong(song){
-
+    startUpload(){
+      this.uploading = true
+    },
+    handleFileUpload(){
+      this.file = this.$refs.songFile.files[0]
+      console.log(this.file)
+    },
+    async uploadSong(song){
+      const song_filename = this.file.name
+      const song_data = song_filename.split('.')
+      const song_name = song_data[0]
+      const song_extension = song_data[1]
+      const song_response = await DataService.uploadSong(song_name, song_extension, this.file)
+      if (song_response === undefined) {
+        alert("Song upload failed")
+      } else {
+        const song = new Song(
+            song_response.data['title'],
+            song_response.data['length'],
+            song_response.data['bpm'],
+            song_response.data['id']
+        )
+        await this.$store.commit('addSong', song)
+      }
     }
   }
 
@@ -48,6 +90,11 @@ export default {
 .songDiv{
   width: 100%;
   margin-bottom: 20px;
+}
+.songUploadDiv{
+  display: inline-block;
+  vertical-align: middle;
+  width: 40%;
 }
 .songNameLabel{
   display: inline-block;

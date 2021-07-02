@@ -4,7 +4,6 @@ const API_URL = 'http://localhost:9001/auth/';
 
 export default {
     login,
-    logout,
     register
 };
 
@@ -22,9 +21,7 @@ function login(username, password){
             return response
         });
 }
-function logout() {
-    localStorage.removeItem('user');
-}
+
 function register(user){
     console.log(user.user, user.password, user.password_repeat)
     if (user.password == user.password_repeat){

@@ -37,7 +37,7 @@ export default {
     }
   },
   created () {
-    this.$store.dispatch('accountStore/logout');
+    this.$store.dispatch('logout');
   },
   methods: {
     async handleSubmit(e) {
@@ -46,12 +46,12 @@ export default {
         const {username, password} = this
         if (username && password) {
           const response = await UserService.login(username, password)
-          console.log(response)
+          // console.log(response)
 
           const token = response.data['access_token']
           const user = username
 
-          await this.$store.dispatch('accountStore/login', {token, user})
+          await this.$store.dispatch('login', {token, user})
           await this.$router.push('/')
         }
       } catch(error) {
