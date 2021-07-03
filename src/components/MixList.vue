@@ -18,7 +18,7 @@
         <button class="downloadButton" :disabled="mix.progress < 100">
           Download
         </button>
-        <button class="deleteButton">
+        <button class="deleteButton" v-on:click="deleteMix(mix.mix)">
           Delete
         </button>
       </div>
@@ -28,6 +28,7 @@
 
 <script>
 import Mix from "@/model/Mix";
+import DataService from "@/services/DataService";
 
 export default{
   computed: {
@@ -45,6 +46,19 @@ export default{
       return mixesWithProg
     }
   },
+  methods: {
+    async deleteMix(mix){
+      if (confirm("Do you really want to delete Mix "+mix.title+"?")){
+        const delete_response = await DataService.deleteMix(mix.id)
+        if (delete_response === undefined)
+          alert("Mix Deletion failed")
+        else {
+          console.log(delete_response)
+          await this.$store.commit('deleteMix', mix)
+        }
+      }
+    }
+  }
 }
 </script>
 

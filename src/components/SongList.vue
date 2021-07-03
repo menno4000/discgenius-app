@@ -52,8 +52,16 @@ export default {
     this.$store.dispatch('fetchSongs')
   },
   methods: {
-    deleteSong(song){
-
+    async deleteSong(song){
+      if(confirm("Do you really want to delete Song "+song.title+"?")){
+        const delete_response = await DataService.deleteSong(song.id)
+        if (delete_response === undefined)
+          alert("Song Deletion failed")
+        else {
+          console.log(delete_response)
+          await this.$store.commit('deleteSong', song)
+        }
+      }
     },
     startUpload(){
       this.uploading = true
