@@ -26,12 +26,29 @@ function getLengthFromSeconds(length) {
 
 
 const actions =  {
-  // TODO rework the first four methods
   async submitMix(context, payload) {
     const {newMix} = payload
-    context.state.mixes.forEach(mix => console.log(mix))
+    // context.state.mixes.forEach(mix => console.log(mix))
     context.commit("addMix", newMix)
-    await context.dispatch('fakeProgressLoop', payload);
+    await context.dispatch('progressLoop', payload);
+  },
+  async progressLoop(context, payload) {
+    let {newMix} = payload
+
+      async function pLoop(){
+      setTimeout(async function() {
+        await context.dispatch('fetchMixes')
+        const mix = context.state.mixes.filter(m => m.id === newMix.id)[0]
+        context.commit('setProgress', mix.progress)
+        if (context.state.currentProgress < 100) {
+          await pLoop()
+        } else {
+          context.commit("refreshAvailableMixes")
+        }
+      }, 10000)
+    }
+
+    await pLoop()
   },
   async fakeProgressLoop(context, payload) {
     let {newMix} = payload
@@ -48,37 +65,27 @@ const actions =  {
         if (context.state.currentProgress < 100) {
           progressLoop()
         }
-      }, 1000)
+      }, 10000)
     }
 
     progressLoop()
-  },
-  deleteMix(context, payload){
-    const {newMix} = payload
-    context.commit("deleteMix", newMix)
-  },
-  fakeProgress(context){
-    function fakeProgressLoop(){
-      setTimeout(function(){
-        context.commit('incrementProgress', context.state)
-        if(context.state.currentProgress < 100){
-          fakeProgressLoop()
-        }
-      },10000)
-    }
-    fakeProgressLoop();
   },
   async fetchSongs(context){
     const song_response = await DataService.getSongs()
     const song_data = song_response.data.data[0]
     let _songs = [];
     song_data.forEach(s => {
-      _songs.push(new Song(
+      let newSong = new Song(
+          s.title.split('_')[0],
           s.title,
           getLengthFromSeconds(s.length),
           s.bpm,
           s.id
-      ))
+      )
+      if ('title_mp3' in s){
+        newSong.title_mp3 = s.title_mp3
+      }
+      _songs.push(newSong)
     })
     context.commit("setSongs", _songs)
   },
@@ -87,16 +94,23 @@ const actions =  {
     const mixes_data = mixes_response.data.data[0]
     let _mixes = []
     mixes_data.forEach(m => {
-      const length_date = new Date(m.length * 1000).toISOString().substr(11, 8)
-
-      _mixes.push(new Mix(
-        m.title.split('_')[0],
-        getLengthFromSeconds(m.length),
-        m.num_songs,
-        m.bpm,
-        m.id,
-        m.progress
-      ))
+      if (m !== null){
+        let new_mix = new Mix(
+            m.title.split('_')[0],
+            m.title,
+            getLengthFromSeconds(m.length),
+            m.num_songs,
+            m.bpm,
+            m.id,
+            m.progress)
+        if ('title_mp3' in m){
+          new_mix.title_mp3 = m.title_mp3
+        }
+        if('length' in m){
+          new_mix.length = getLengthFromSeconds(m.length)
+        }
+        _mixes.push(new_mix)
+      }
     })
     context.commit("setMixes", _mixes)
   },
@@ -136,6 +150,9 @@ const mutations = {
   },
   increaseProgress(state, progress){
     state.currentProgress += progress;
+  },
+  setProgress(state, progress){
+    state.currentProgress = progress
   },
   updateMixProgress(state, payload){
     let mix = state.mixes.find(x => x.title === payload.mixTitle)
@@ -183,7 +200,11 @@ const getters = {
     return state.mixes
   },
   getAvailableMixes: state => {
-    return state.mixes.filter(mix => mix.progress >= 100)
+    // console.log(state.mixes)
+    return state.mixes
+        .filter(mix => mix !== null)
+        .filter(mix => mix !== undefined)
+        .filter(mix => mix.progress >= 100)
   },
   isLoggedIn: state => {
     return !!state.token;

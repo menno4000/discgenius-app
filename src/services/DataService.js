@@ -10,7 +10,7 @@ export default {
     getMixes,
     getMixFile,
     deleteMix,
-    submitMix
+    createMix
 }
 
 //TODO remove excessive console logging
@@ -53,7 +53,6 @@ function getSongFile(songName){
             }
         }
     ).then(function(response) {
-        console.log(response)
         return response
     }).catch(function(error){
         console.log(error)
@@ -68,7 +67,6 @@ function deleteSong(songId){
             }
         }
     ).then(function(response){
-        console.log(response)
         return response
     }).catch(function(error){
         console.log(error)
@@ -78,12 +76,48 @@ function getMixes() {
     return axios.get(
         API_URL+'mixes'
     ).then(function (response){
-        // console.log(response)
         return response
     }).catch(function(error){
         console.log(error)
     })
 }
+function createMix(mixName,
+                   aName,
+                   bName,
+                   scenario,
+                   bpm,
+                   numSongsA,
+                   numSongsB,
+                   entryPoint,
+                   exitPoint){
+
+    const query_params = {
+        song_a_name: aName,
+        song_b_name: bName,
+        mix_name: mixName,
+        bpm: bpm,
+        scenario_name: scenario,
+        num_songs_a: numSongsA,
+        num_songs_b: numSongsB,
+        exit_point: exitPoint,
+        entry_point: entryPoint,
+        transition_length: 64,
+        transition_midpoint: 32
+    }
+    console.log(query_params)
+    return axios.post(
+        API_URL+'createMix',
+        null,
+        {
+            params: query_params,
+        }
+    ).then(function(response){
+        return response
+    }).catch(function(error){
+        console.log(error)
+    })
+}
+
 function getMixFile(mixName){
     return axios.get(
         API_URL+'getMix',
@@ -108,12 +142,8 @@ function deleteMix(mixId){
             }
         }
     ).then(function (response){
-        console.log(response)
         return response
     }).catch(function(error){
         console.log(error)
     })
-}
-function submitMix(mix){
-
 }

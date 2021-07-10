@@ -2,7 +2,7 @@
   <div>
     <div class="spacer"/>
     <div v-if="!uploading">
-      <button class="uploadButton" v-on:click="startUpload()">
+      <button class="uploadButton" v-on:click="startUpload()" :disabled="!canUpload">
         Upload New Song
       </button>
     </div>
@@ -19,16 +19,42 @@
         </button>
       </div>
     </div>
-    <div v-for="song in songs" :key="song.id">
-      <div class="songDiv">
-        <div class="songNameLabel">{{song.title}}</div>
-        <div class="songLengthLabel">{{song.length}}</div>
-        <div class="songTempoLabel">{{song.tempo}}</div>
-        <button class="deleteButton" v-on:click="deleteSong(song)">
+    <div>
+      <div class="songNameLabel">
+        <span>Song Name</span>
+      </div>
+      <div class="songLengthLabel">
+        <span>Length</span>
+      </div>
+      <div class="songTempoLabel">
+        <span>Tempo</span>
+      </div>
+      <div class="deleteDiv">
+        <button class="deletePlaceholder">
           Delete
         </button>
       </div>
     </div>
+    <v-expansion-panels>
+      <v-expansion-panel v-for="song in songs" :key="song.id">
+        <v-expansion-panel-header>
+          <div class="songDiv">
+            <div class="songNameLabel">{{song.title}}</div>
+            <div class="songLengthLabel">{{song.length}}</div>
+            <div class="songTempoLabel">{{song.tempo}}</div>
+            <div class="deleteDiv">
+              <button class="deleteButton" v-on:click="deleteSong(song)">
+                Delete
+              </button>
+            </div>
+          </div>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <div class="songDiv">
+          </div>
+        </v-expansion-panel-content>
+      </v-expansion-panel>
+    </v-expansion-panels>
   </div>
 </template>
 
@@ -36,7 +62,13 @@
 import Song from "../model/Song";
 import DataService from "@/services/DataService";
 
+// TODO unfold for playback
+// TODO table header
+
 export default {
+  components: {
+    VuetifyAudio: () => import('vuetify-audio')
+  },
   data() {
     return {
       uploading: false,
@@ -46,10 +78,15 @@ export default {
   computed: {
     songs(){
       return this.$store.getters.getSongs;
+    },
+    canUpload(){
+      return !!this.$store.getters.isLoggedIn;
     }
   },
   created() {
-    this.$store.dispatch('fetchSongs')
+    if(this.$store.getters.isLoggedIn){
+      this.$store.dispatch('fetchSongs')
+    }
   },
   methods: {
     async deleteSong(song){
@@ -102,7 +139,6 @@ export default {
 }
 .songDiv{
   width: 100%;
-  margin-bottom: 20px;
 }
 .songUploadDiv{
   display: inline-block;
@@ -112,31 +148,50 @@ export default {
 .songNameLabel{
   display: inline-block;
   vertical-align: middle;
-  text-align: left;
+  text-align: center;
   margin-left: 10%;
   width: 30%;
+}
+.songNameLabel > span{
+  font-size: medium;
 }
 .songTempoLabel{
   display: inline-block;
   vertical-align: middle;
-  text-align: left;
+  text-align: center;
   width: 5%;
   margin-left: 5%;
+}
+.songTempoLabel > span{
+  font-size: medium;
 }
 .songLengthLabel{
   display: inline-block;
   vertical-align: middle;
-  text-align: left;
+  text-align: center;
   width: 5%;
   margin-left: 5%;
 }
-.deleteButton{
+.songLengthLabel > span{
+  font-size: medium;
+}
+.deleteDiv{
   display: inline-block;
   vertical-align: middle;
   align-self: center;
+}
+.deleteButton{
   color: white;
   font-size: 16px;
   background-color: #ff5d44;
+  margin: 20px;
+  padding: 10px 20px;
+  border-radius: 4px;
+}
+.deletePlaceholder{
+  color: white;
+  font-size: 16px;
+  background-color: white;
   margin: 20px;
   padding: 10px 20px;
   border-radius: 4px;
@@ -147,6 +202,14 @@ export default {
   background-color: #76b900;
   border-radius: 4px;
   color: white;
+  padding: 10px 20px;
+}
+.uploadButton:disabled{
+  margin: 20px;
+  font-size: 16px;
+  background-color: lightgrey;
+  border-radius: 4px;
+  color: black;
   padding: 10px 20px;
 }
 </style>

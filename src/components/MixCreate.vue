@@ -23,7 +23,7 @@
         <label class="songInfo">length: {{ length1 }}</label>
         <label class="songInfo">number of songs: {{ numSongs1 }}</label>
       </div>
-      <div v-if="length1 > 0">
+      <div v-if="length1 !== 0">
         <input type="range"
                v-model="exitPoint"
                max="100"
@@ -52,7 +52,7 @@
         <label class="songInfo">length: {{ length2 }}</label>
         <label class="songInfo">number of songs: {{ numSongs2 }}</label>
       </div>
-      <div v-if="length2 > 0">
+      <div v-if="length2 !== 0">
         <input type="range"
                v-model="entryPoint"
                max="100"
@@ -85,8 +85,7 @@
           </div>
           <div>
             <label>
-              Each Scenario represents volume control for both tracks' High-, Mid- and Low-Frequency-Bands, similar to
-              how a Three-Band-EQ functions in standard DJ equipment.
+              Each Scenario represents volume control for both tracks' High-, Mid- and Low-Frequency-Bands.
             </label>
           </div>
         </div>
@@ -188,18 +187,23 @@ import Song from '../model/Song'
 import Mix from '../model/Mix'
 import {v4 as uuidv4} from 'uuid'
 import LoginState from "@/components/LoginState";
+import DataService from "@/services/DataService";
 
+// TODO hover slider explanation (text and slider)
+// TODO hover tempo override (text and checkbox)
+// TODO scenario preview clips with audio playback
+// TODO adjust color scheme
 export default {
   components: {LoginState},
   data() {
     return {
       selected1: new Song("stub", 0.0, 0.0, "0"),
       tempo1: 0.0,
-      length1: 0.0,
+      length1: 0,
       numSongs1: 0,
       selected2: new Song("stub", 0.0, 0.0, "0"),
       tempo2: 0.0,
-      length2: 0.0,
+      length2: 0,
       numSongs2: 0,
       yeOldeStub: "",
       songsSelected: false,
@@ -248,12 +252,14 @@ export default {
       }
     },
     newMixLength() {
-      let adjustedSong2Length = (this.tempo1 / this.tempo2) * this.length2;
+      let adjustedSong2Length = (this.tempo2 / this.tempo1) * this.length2;
       adjustedSong2Length = Math.round(adjustedSong2Length * 100) / 100
       return this.length1 + adjustedSong2Length;
     },
-    newMix() {
-    }
+  },
+  created() {
+    this.$store.dispatch('fetchMixes')
+    this.$store.dispatch('fetchSongs')
   },
   methods: {
     selectFirstSong() {
@@ -279,8 +285,8 @@ export default {
     },
     checkSongSelection() {
       let numSongs = 0;
-      if (this.length1 > 0) numSongs++;
-      if (this.length2 > 0) numSongs++;
+      if (this.length1 !== 0) numSongs++;
+      if (this.length2 !== 0) numSongs++;
       if (numSongs === 2) {
         this.songsSelected = true
 
@@ -290,11 +296,32 @@ export default {
       this.scenario = pName;
       this.previewSelected = true;
     },
-    submit() {
+    async submit() {
       this.submitted = true;
-      this.$store.dispatch('fakeProgress')
-      let newMix = new Mix(this.mixName, this.newMixLength, this.mixNumSongs, this.mixTempo, uuidv4(), 1)
-      this.$store.dispatch('submitMix', {newMix})
+      const exitPoint = Math.round(((1-this.convertExitPoint) * 100)) / 100
+
+      const submit_response = await DataService.createMix(this.mixName,
+          this.selected1.title_wav,
+          this.selected2.title_wav,
+          this.scenario,
+          this.mixTempo,
+          this.numSongs1,
+          this.numSongs2,
+          this.convertEntryPoint,
+          exitPoint)
+      if (submit_response === undefined){
+        alert("Mix Creation failed")
+      } else {
+        const mixId = submit_response.data.message.split(':')[1].trim()
+        const newMix = new Mix(
+            this.mixName,
+            this.mixNumSongs,
+            this.mixTempo,
+            mixId,
+            this.progress = 10
+        )
+        await this.$store.dispatch('submitMix', newMix)
+      }
     }
   },
 }
