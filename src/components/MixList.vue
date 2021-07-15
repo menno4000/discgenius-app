@@ -60,7 +60,9 @@ export default{
   methods: {
     async pollMixes() {
       setInterval(() => {
-        this.$store.dispatch('fetchMixes')
+        if (this.mixes.filter(x => x.progress < 0).size > 0){
+          this.$store.dispatch('fetchMixes')
+        }
       }, 60000)
     },
     async deleteMix(mix){

@@ -36,21 +36,33 @@
       </div>
     </div>
     <v-expansion-panels>
-      <v-expansion-panel v-for="song in songs" :key="song.id">
+      <v-expansion-panel v-for="song in songs"
+                         :key="song.id"
+                         @click="playbackSong(song)">
         <v-expansion-panel-header>
           <div class="songDiv">
-            <div class="songNameLabel">{{song.title}}</div>
-            <div class="songLengthLabel">{{song.length}}</div>
-            <div class="songTempoLabel">{{song.tempo}}</div>
+            <div class="songNameLabel">{{ song.title }}</div>
+            <div class="songLengthLabel">{{ song.length }}</div>
+            <div class="songTempoLabel">{{ song.tempo }}</div>
+          </div>
+        </v-expansion-panel-header>
+        <v-expansion-panel-content>
+          <div class="songDiv">
+            <div v-if="playbackFile !== ''">
+              <vue-plyr>
+                <audio controls crossorigin playsinline>
+                  <source
+                      v-bind:src="playbackFile"
+                      type="audio/mp3"
+                  />
+                </audio>
+              </vue-plyr>
+            </div>
             <div class="deleteDiv">
               <button class="deleteButton" v-on:click="deleteSong(song)">
                 Delete
               </button>
             </div>
-          </div>
-        </v-expansion-panel-header>
-        <v-expansion-panel-content>
-          <div class="songDiv">
           </div>
         </v-expansion-panel-content>
       </v-expansion-panel>
@@ -58,7 +70,7 @@
   </div>
 </template>
 
-<script >
+<script>
 import Song from "../model/Song";
 import DataService from "@/services/DataService";
 
@@ -66,31 +78,29 @@ import DataService from "@/services/DataService";
 // TODO table header
 
 export default {
-  components: {
-    VuetifyAudio: () => import('vuetify-audio')
-  },
   data() {
     return {
       uploading: false,
-      file: ''
+      file: '',
+      playbackFile: ''
     }
   },
   computed: {
-    songs(){
+    songs() {
       return this.$store.getters.getSongs;
     },
-    canUpload(){
+    canUpload() {
       return !!this.$store.getters.isLoggedIn;
     }
   },
   created() {
-    if(this.$store.getters.isLoggedIn){
+    if (this.$store.getters.isLoggedIn) {
       this.$store.dispatch('fetchSongs')
     }
   },
   methods: {
-    async deleteSong(song){
-      if(confirm("Do you really want to delete Song "+song.title+"?")){
+    async deleteSong(song) {
+      if (confirm("Do you really want to delete Song " + song.title + "?")) {
         const delete_response = await DataService.deleteSong(song.id)
         if (delete_response === undefined)
           alert("Song Deletion failed")
@@ -100,32 +110,52 @@ export default {
         }
       }
     },
-    startUpload(){
+    startUpload() {
       this.uploading = true
     },
-    handleFileUpload(){
+    handleFileUpload() {
       this.file = this.$refs.songFile.files[0]
     },
-    async uploadSong(song){
+    async uploadSong(song) {
       const song_filename = this.file.name
       const song_data = song_filename.split('.')
       const song_name = song_data[0]
       const song_extension = song_data[1]
-      const song_response = await DataService.uploadSong(song_name, song_extension, this.file)
-      if (song_response === undefined) {
+      const song_upload_response = await DataService.uploadSong(song_name, song_extension, this.file)
+      if (song_upload_response === undefined) {
         alert("Song upload failed")
       } else {
-        console.log(song_response)
+        console.log(song_upload_response)
         const song = new Song(
-            song_response.data.title,
-            song_response.data.length,
-            song_response.data.bpm,
-            song_response.data.id
+            song_upload_response.data.title,
+            song_upload_response.data.length,
+            song_upload_response.data.bpm,
+            song_upload_response.data.id
         )
         await this.$store.commit('addSong', song)
         this.uploading = false
         await this.$store.dispatch("fetchSongs")
       }
+    },
+    async playbackSong(song) {
+      this.playbackFile = ''
+      this.playbackFile = "http://localhost:9001/getSong?name="+song.title_mp3
+      console.log("fetching song "+song.title_mp3+" for playback")
+      // console.log('fetching song playback')
+      // const song_download_response = await DataService.getSongFile(song.title_mp3)
+      // if (song_download_response === undefined) {
+      //   console.log("song download failed")
+      //   this.playbackFile = ''
+      // } else {
+      //   console.log(song_download_response)
+      //   let blob = new Blob([song_download_response.data])
+      //   let link = document.createElement('a')
+      //   link.href = window.URL.createObjectURL(blob)
+      //   link.setAttribute('download', song.title_mp3)
+      //
+      //   this.playbackFile = link
+      //   console.log(this.playbackFile)
+      // }
     }
   }
 
@@ -137,50 +167,67 @@ export default {
   width: 100%;
   height: 20px;
 }
-.songDiv{
+
+.songDiv {
   width: 100%;
 }
-.songUploadDiv{
+
+.songUploadDiv {
   display: inline-block;
   vertical-align: middle;
   width: 40%;
 }
-.songNameLabel{
+
+.songNameLabel {
   display: inline-block;
   vertical-align: middle;
   text-align: center;
   margin-left: 10%;
   width: 30%;
 }
-.songNameLabel > span{
+
+.songNameLabel > span {
   font-size: medium;
 }
-.songTempoLabel{
+
+.songTempoLabel {
   display: inline-block;
   vertical-align: middle;
   text-align: center;
   width: 5%;
   margin-left: 5%;
 }
-.songTempoLabel > span{
+
+.songTempoLabel > span {
   font-size: medium;
 }
-.songLengthLabel{
+
+.songLengthLabel {
   display: inline-block;
   vertical-align: middle;
   text-align: center;
   width: 5%;
   margin-left: 5%;
 }
-.songLengthLabel > span{
+
+.songLengthLabel > span {
   font-size: medium;
 }
-.deleteDiv{
+
+.playbackDiv {
+  display: inline-block;
+  vertical-align: middle;
+  align-self: center;
+
+}
+
+.deleteDiv {
   display: inline-block;
   vertical-align: middle;
   align-self: center;
 }
-.deleteButton{
+
+.deleteButton {
   color: white;
   font-size: 16px;
   background-color: #ff5d44;
@@ -188,7 +235,8 @@ export default {
   padding: 10px 20px;
   border-radius: 4px;
 }
-.deletePlaceholder{
+
+.deletePlaceholder {
   color: white;
   font-size: 16px;
   background-color: white;
@@ -196,7 +244,8 @@ export default {
   padding: 10px 20px;
   border-radius: 4px;
 }
-.uploadButton{
+
+.uploadButton {
   margin: 20px;
   font-size: 16px;
   background-color: #76b900;
@@ -204,7 +253,8 @@ export default {
   color: white;
   padding: 10px 20px;
 }
-.uploadButton:disabled{
+
+.uploadButton:disabled {
   margin: 20px;
   font-size: 16px;
   background-color: lightgrey;

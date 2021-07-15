@@ -90,9 +90,7 @@
           </div>
         </div>
         <div class="scenarioLegend">
-          <img width="140px"
-               height="140px"
-               src="@/assets/legend.png"/>
+          <img src="@/assets/legend.png"/>
         </div>
       </div>
       <div>
@@ -100,14 +98,14 @@
           <button class="scenarioButton"
                   v-on:click="selectScenario('EQ_1.0')"
                   :disabled="scenario === 'EQ_1.0'">
-            <img class="scenarioPreview" src="@/assets/EQ_01.png"/>
+            <img class="scenarioPreview" src="@/assets/EQ.png"/>
           </button>
         </div>
         <div class="scenarioBlock">
           <button class="scenarioButton"
-                  v-on:click="selectScenario('EQ_2.0')"
-                  :disabled="scenario === 'EQ_2.0'">
-            <img class="scenarioPreview" src="@/assets/EQ_02.png"/>
+                  v-on:click="selectScenario('EQ_1.1')"
+                  :disabled="scenario === 'EQ_1.1'">
+            <img class="scenarioPreview" src="@/assets/EQ_cut.png"/>
           </button>
         </div>
         <div>
@@ -124,7 +122,7 @@
           <button class="scenarioButton"
                   v-on:click="selectScenario('VFF_1.0')"
                   :disabled="scenario === 'VFF_1.0'">
-            <img class="scenarioPreview" src="@/assets/VFF_nocut.png"/>
+            <img class="scenarioPreview" src="@/assets/VFF.png"/>
           </button>
         </div>
         <div class="scenarioBlock">
