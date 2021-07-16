@@ -13,7 +13,8 @@ import Mix from "@/model/Mix";
 
 Vue.use(Vuex)
 
-const initialstate = getDefaultState()
+const initialState = getDefaultState()
+const API_URL = 'http://localhost:9001/';
 
 function getLengthFromSeconds(length) {
   let minutes = Math.floor(length / 60)
@@ -79,10 +80,12 @@ const actions =  {
           s.title.split('_')[0],
           s.title,
           getLengthFromSeconds(s.length),
+          s.length,
           s.bpm,
           s.id
       )
       if ('title_mp3' in s){
+        newSong.url = API_URL + 'getSongMedia?name=' + s.title_mp3
         newSong.title_mp3 = s.title_mp3
       }
       _songs.push(newSong)
@@ -216,7 +219,7 @@ const getters = {
 
 
 export default new Vuex.Store({
-  state: initialstate,
+  state: initialState,
   actions: actions,
   mutations: mutations,
   getters: getters,
