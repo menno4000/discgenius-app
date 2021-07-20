@@ -23,16 +23,32 @@ export default class Mix {
     set length(value){
         this._length = value;
     }
+    get length_seconds() {
+        return this._length_seconds;
+    }
 
-    constructor(title, title_wav, length, numSongs, tempo, id, progress) {
+    set length_seconds(value){
+        this._length_seconds = value;
+    }
+    get url() {
+        return this._url;
+    }
+
+    set url(value) {
+        this._url = value;
+    }
+
+    constructor(title, title_wav, numSongs, tempo, id, progress) {
         this.title = title;
         this._title_wav = title_wav
         this.numSongs = numSongs;
         this.tempo = tempo;
         this.id = id;
         this.progress = progress;
+        this._length_seconds = "";
         this._title_mp3 = "";
         this._length = "";
-
+        this._url = "";
+        this._title_mp3 = "";
     }
 }

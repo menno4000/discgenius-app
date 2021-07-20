@@ -64,7 +64,7 @@ export default class Song {
         this._url = value;
     }
     
-    constructor(title, title_wav, length, length_seconds, tempo, id, url) {
+    constructor(title, title_wav, length, length_seconds, tempo, id) {
         this._title = title;
         this._title_wav = title_wav;
         this._length = length;

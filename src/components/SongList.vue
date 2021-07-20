@@ -22,26 +22,23 @@
       </div>
     </div>
     <div id="tableHeader">
-      <div class="songNameLabel">
-        <span>Song Name</span>
-      </div>
-      <div class="songLengthLabel">
-        <span>Length</span>
-      </div>
-      <div class="songTempoLabel">
-        <span>Tempo</span>
-      </div>
-      <div class="deleteDiv">
-        <button class="deletePlaceholder">
-          Delete
-        </button>
+      <div class="songDiv">
+        <div class="songNameLabel">
+          <span>Song Name</span>
+        </div>
+        <div class="songLengthLabel">
+          <span>Length</span>
+        </div>
+        <div class="songTempoLabel">
+          <span>Tempo</span>
+        </div>
       </div>
     </div>
     <div id="songItems">
       <v-expansion-panels>
         <v-expansion-panel v-for="song in songs"
                            :key="song.id"
-                           @click="playbackSong(song)">
+                           @change="playbackSong(song)">
           <v-expansion-panel-header>
             <div class="songDiv">
               <div class="songNameLabel">{{ song.title }}</div>
@@ -68,8 +65,8 @@
                         <div v-on:click="seek" class="player-seeker" title="Seek"></div>
                       </div>
                       <div class="player-time">
-                        <div class="player-time-current">{{ currentSeconds | convertTimeHHMMSS(currentSeconds)}}</div>
-                        <div class="player-time-total">{{ durationSeconds | convertTimeHHMMSS(durationSeconds) }}</div>
+                        <div class="player-time-current">{{ currentTime }}</div>
+                        <div class="player-time-total">{{ durationTime }}</div>
                       </div>
                     </div>
                     <div id="volume">
@@ -93,7 +90,7 @@
         </v-expansion-panel>
       </v-expansion-panels>
     </div>
-    <audio ref="audio" id="audio-driver" :src="currentSong" v-on:timeupdate="update" v-on:loadeddata="load" v-on:pause="playing = false" v-on:seek="playing = true" preload="auto" style="display: none;"></audio>
+    <audio ref="audio" id="audio-driver" :src="currentSong" v-on:timeupdate="update" v-on:loadeddata="load" v-on:pause="playing = false" v-on:seek="playing = true" preload="auto" style="display: none;" controls></audio>
   </div>
 </template>
 
@@ -105,6 +102,12 @@ import DataService from "@/services/DataService";
 // TODO communicate dropdown with icon
 // TODO table header realignment
 
+const convertTimeHHMMSS = (val) => {
+  let hhmmss = new Date(val * 1000).toISOString().substr(11, 8);
+
+  return hhmmss.indexOf("00:") === 0 ? hhmmss.substr(3) : hhmmss;
+};
+
 export default {
   data() {
     return {
@@ -113,6 +116,7 @@ export default {
       uploading: false,
       file: '',
 
+      audio: undefined,
       currentSong: '',
       currentSeconds: 0,
       durationSeconds: 0,
@@ -139,12 +143,25 @@ export default {
       // },
     }
   },
+  mounted() {
+    this.audio = this.$el.querySelectorAll('audio')[0];
+    this.audio.addEventListener('timeupdate', this.update);
+    this.audio.addEventListener('loadeddata', this.load);
+    this.audio.addEventListener('pause', () => { this.playing = false; });
+    this.audio.addEventListener('play', () => { this.playing = true; });
+  },
   computed: {
     songs() {
       return this.$store.getters.getSongs;
     },
     canUpload() {
       return !!this.$store.getters.isLoggedIn;
+    },
+    currentTime() {
+      return convertTimeHHMMSS(this.currentSeconds);
+    },
+    durationTime() {
+      return convertTimeHHMMSS(this.durationSeconds);
     },
     percentComplete() {
       return parseInt(this.currentSeconds / this.durationSeconds * 100);
@@ -161,25 +178,6 @@ export default {
       this.$store.dispatch('fetchSongs')
     }
   },
-  mounted() {
-    console.log(this.songs)
-    // this.audioPlayer = this.$el.querySelectorAll("audio")[0];
-    // this.initPlayer({
-    //   id: "stubby",
-    //   title: "stubby",
-    //   url: "https://file-examples-com.github.io/uploads/2017/11/file_example_MP3_700KB.mp3"
-    // });
-  },
-  filters: {
-    convertTimeHHMMSS(val) {
-      console.log('incoming time (s): ', val)
-      let hhmmss = new Date(0).toISOString().substr(11, 8)
-      if (!isNaN(val)){
-        hhmmss = new Date(val * 1000).toISOString().substr(11, 8);
-      }
-      return hhmmss.indexOf("00:") === 0 ? hhmmss.substr(3) : hhmmss;
-    }
-  },
   watch: {
     playing(value) {
       if (value) { return this.$refs.audio.play(); }
@@ -187,33 +185,41 @@ export default {
     },
     volume(value) {
       this.$refs.audio.volume = this.volume / 100;
-    }
+    },
   },
   methods: {
     load() {
-      if (this.$refs.audio.readyState >= 2) {
+      if (this.audio.readyState >= 2) {
         this.loaded = true;
+        this.durationSeconds = parseInt(this.audio.duration);
         return this.playing = false;
       }
       throw new Error('Failed to load sound file.');
     },
     seek(e) {
       if (!this.loaded) return;
+      console.log("seeking new audio position");
       const bounds = e.target.getBoundingClientRect();
       const seekPos = (e.clientX - bounds.left) / bounds.width;
-      const currentDuration = this.durationSeconds
-      const newTime = parseInt(currentDuration * seekPos);
-      console.log('new currentTime: ', newTime)
+      const newTimeRaw = this.audio.duration * seekPos
+      const newTime = parseInt(newTimeRaw);
+      console.log("new time raw: ", newTimeRaw)
+      console.log("new time parsed: ", newTime)
       let player = document.getElementById('audio-driver')
-      player.currentTime = newTime;
-      console.log(player.currentTime)
+      // player.currentTime = newTime
+      // // console.log(player.currentTime)
+      const newTimeString = newTime.toFixed(1)
+      console.log("setting new time: ", newTime)
+      this.audio.currentTime = newTime
+      // console.log(this.audio.currentTime)
+      // player.currentTIme = newTimeString
     },
     stop() {
       this.playing = false;
-      this.$refs.audio.currentTime = 0;
+      this.audio.currentTime = 0;
     },
     update(e) {
-      this.currentSeconds = parseInt(this.$refs.audio.currentTime);
+      this.currentSeconds = parseInt(this.audio.currentTime);
     },
 
     async deleteSong(song) {
@@ -256,8 +262,8 @@ export default {
       }
     },
     async playbackSong(song) {
-      console.log('initiating track playback from url:',song.url)
-      this.$refs.audio.src = song.url
+      console.log('initiating track playback from url: ',song.url)
+      this.audio.src = song.url
       this.currentSong = song.url
       this.durationSeconds = Math.round(song.length_seconds)
       // this.durationSeconds =  this.$refs.audio.duration

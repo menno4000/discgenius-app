@@ -24,15 +24,31 @@
         <label class="songInfo">number of songs: {{ numSongs1 }}</label>
       </div>
       <div v-if="length1 !== 0">
-        <input type="range"
-               v-model="exitPoint"
-               max="100"
-               min="1"
-               hint="Exit Point"
-               class="entryPointSlider"/>
-        <label class="entryPointLabel">
-          {{ convertExitPoint }}
-        </label>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <input type="range"
+                   v-model="exitPoint"
+                   max="100"
+                   min="1"
+                   v-bind="attrs"
+                   v-on="on"
+                   class="entryPointSlider"/>
+          </template>
+          <span>
+            Control what part of the first track will be considered for beginning the transition
+          </span>
+        </v-tooltip>
+
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <span
+                v-bind="attrs"
+                v-on="on">
+              {{ convertExitPoint }}
+            </span>
+          </template>
+          <span>The last {{ convertExitPointPercent }}% of the first track will be scanned for usable transition areas</span>
+        </v-tooltip>
       </div>
       <div>
         <select v-model="selected2"
@@ -53,15 +69,41 @@
         <label class="songInfo">number of songs: {{ numSongs2 }}</label>
       </div>
       <div v-if="length2 !== 0">
-        <input type="range"
-               v-model="entryPoint"
-               max="100"
-               min="0"
-               hint="Entry Point"
-               class="entryPointSlider"/>
-        <label class="entryPointLabel">
-          {{ convertEntryPoint }}
-        </label>
+        <v-slider
+            max="100"
+            min="0"
+            hint="Entry Point"
+            :color="entryPointSliderColors.entry"
+            :track-color="entryPointSliderColors.trail"
+            :thumb-color="sliderThumbColor"
+            v-model="entryPoint"
+            class="entryPointSlider">
+
+        </v-slider>
+<!--        <v-tooltip bottom>-->
+<!--          <template v-slot:activator="{ on, attrs }">-->
+<!--            <input type="range"-->
+<!--                   v-model="entryPoint"-->
+<!--                   max="100"-->
+<!--                   min="0"-->
+<!--                   v-bind="attrs"-->
+<!--                   v-on="on"-->
+<!--                   class="entryPointSlider"/>-->
+<!--          </template>-->
+<!--          <span>Control what part of the second Track will be used in the transition</span>-->
+<!--        </v-tooltip>-->
+
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <span class="entryPointLabel"
+                  v-bind="attrs"
+                  v-on="on">
+              {{convertEntryPoint}}
+            </span>
+          </template>
+          <span>The first {{convertEntryPointPercent}}% of the second track will be scanned for usable transition areas</span>
+        </v-tooltip>
+
       </div>
       <div class="tempoOverride">
         <label class="tempoOverrideLabel">Override Mix Tempo?</label>
@@ -94,12 +136,47 @@
         </div>
       </div>
       <div>
+
         <div class="scenarioBlock">
           <button class="scenarioButton"
                   v-on:click="selectScenario('EQ_1.0')"
                   :disabled="scenario === 'EQ_1.0'">
             <img class="scenarioPreview" src="@/assets/EQ.png"/>
           </button>
+          <div v-if="scenario==='EQ_1.0'">
+            <div id="audio-player" class="player-wrapper">
+              <div class="player">
+                <div class="player-controls">
+                  <div id="play">
+                    <a v-on:click.prevent="playing = !playing"  :title="(playing) ? 'Pause' : 'Play'" href="#">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path v-if="!playing" fill="currentColor" d="M15,10.001c0,0.299-0.305,0.514-0.305,0.514l-8.561,5.303C5.51,16.227,5,15.924,5,15.149V4.852c0-0.777,0.51-1.078,1.135-0.67l8.561,5.305C14.695,9.487,15,9.702,15,10.001z"/>
+                        <path v-else fill="currentColor" d="M15,3h-2c-0.553,0-1,0.048-1,0.6v12.8c0,0.552,0.447,0.6,1,0.6h2c0.553,0,1-0.048,1-0.6V3.6C16,3.048,15.553,3,15,3z M7,3H5C4.447,3,4,3.048,4,3.6v12.8C4,16.952,4.447,17,5,17h2c0.553,0,1-0.048,1-0.6V3.6C8,3.048,7.553,3,7,3z"/>
+                      </svg>
+                    </a>
+                  </div>
+                  <div id="seek">
+                    <div class="player-timeline">
+                      <div :style="progressStyle" class="player-progress"></div>
+                      <div v-on:click="seek" class="player-seeker" title="Seek"></div>
+                    </div>
+                    <div class="player-time">
+                      <div class="player-time-current">{{ currentSeconds | convertTimeHHMMSS(currentSeconds)}}</div>
+                      <div class="player-time-total">{{ durationSeconds | convertTimeHHMMSS(durationSeconds) }}</div>
+                    </div>
+                  </div>
+                  <div id="volume">
+                    <a v-on:click.prevent="" v-on:mouseenter="showVolume = true" v-on:mouseleave="showVolume = false" :title="volumeTitle" href="#">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path fill="currentColor" d="M19,13.805C19,14.462,18.462,15,17.805,15H1.533c-0.88,0-0.982-0.371-0.229-0.822l16.323-9.055C18.382,4.67,19,5.019,19,5.9V13.805z"/>
+                      </svg>
+                      <input v-model.lazy.number="volume" v-show="showVolume" class="player-volume" type="range" min="0" max="100"/>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="scenarioBlock">
           <button class="scenarioButton"
@@ -177,6 +254,7 @@
         </div>
       </div>
     </div>
+    <audio ref="audio" id="audio-driver" :src="currentPreview" v-on:timeupdate="update" v-on:loadeddata="load" v-on:pause="playing = false" v-on:seek="playing = true" preload="auto" style="display: none;"></audio>
   </div>
 </template>
 
@@ -213,14 +291,41 @@ export default {
       customTempo: 120.0,
       entryPoint: 30.0,
       exitPoint: 70.0,
+      sliderThumbColor: '#20b900',
+      exitPointSliderColors: {
+        preface: '#8a9869',
+        exit: '#76b900',
+      },
+      entryPointSliderColors: {
+        entry: '#76b900',
+        trail: '#c4d48a',
+      },
+
+      defaultPreview:
+          "https://res.cloudinary.com/dmf10fesn/video/upload/v1548882863/audio/Post_Malone_-_Wow._playvk.com.mp3",
+      currentPreview: '',
+      currentSeconds: 0,
+      durationSeconds: 0,
+      loaded: false,
+      playing: false,
+      previousVolume: 35,
+      showVolume: false,
+      volume: 100
+
     }
   },
   computed: {
     convertExitPoint() {
       return (this.exitPoint / 100);
     },
+    convertExitPointPercent() {
+      return (this.exitPoint - 100)*-1;
+    },
     convertEntryPoint() {
       return (this.entryPoint / 100);
+    },
+    convertEntryPointPercent() {
+      return (this.exitPoint - 100)*-1;
     },
     songs() {
       return this.$store.state.songs;
@@ -254,10 +359,29 @@ export default {
       adjustedSong2Length = Math.round(adjustedSong2Length * 100) / 100
       return this.length1 + adjustedSong2Length;
     },
+    percentComplete() {
+      return parseInt(this.currentSeconds / this.durationSeconds * 100);
+    },
+    progressStyle() {
+      return { width: `${this.percentComplete}%` };
+    },
+    volumeTitle() {
+      return `Volume (${this.volume}%)`;
+    }
   },
   created() {
     this.$store.dispatch('fetchMixes')
     this.$store.dispatch('fetchSongs')
+  },
+  filters: {
+    convertTimeHHMMSS(val) {
+      console.log('incoming time (s): ', val)
+      let hhmmss = new Date(0).toISOString().substr(11, 8)
+      if (!isNaN(val)){
+        hhmmss = new Date(val * 1000).toISOString().substr(11, 8);
+      }
+      return hhmmss.indexOf("00:") === 0 ? hhmmss.substr(3) : hhmmss;
+    }
   },
   methods: {
     selectFirstSong() {
@@ -293,6 +417,7 @@ export default {
     selectScenario(pName) {
       this.scenario = pName;
       this.previewSelected = true;
+      this.previewUrl = previewName
     },
     async submit() {
       this.submitted = true;
@@ -320,12 +445,47 @@ export default {
         )
         await this.$store.dispatch('submitMix', newMix)
       }
+    },
+    load() {
+      if (this.$refs.audio.readyState >= 2) {
+        this.loaded = true;
+        return this.playing = false;
+      }
+      throw new Error('Failed to load sound file.');
+    },
+    seek(e) {
+      if (!this.loaded) return;
+      const bounds = e.target.getBoundingClientRect();
+      const seekPos = (e.clientX - bounds.left) / bounds.width;
+      const currentDuration = this.durationSeconds
+      const newTime = parseInt(currentDuration * seekPos);
+      console.log('new currentTime: ', newTime)
+      let player = document.getElementById('audio-driver')
+      player.currentTime = newTime;
+      console.log(player.currentTime)
+    },
+    stop() {
+      this.playing = false;
+      this.$refs.audio.currentTime = 0;
+    },
+    update(e) {
+      this.currentSeconds = parseInt(this.$refs.audio.currentTime);
+    },
+    async playbackScenariosample(sample) {
+      console.log('initiating mix playback from url: ',mix.url)
+      console.log(this.mixes)
+      this.$refs.audio.src = mix.url
+      this.currentSong = mix.url
+      this.durationSeconds = Math.round(mix.length_seconds)
+      console.log('loaded mix is ', this.durationSeconds, ' seconds long.')
+      this.currentSeconds = 0
+      this.playing = false
     }
   },
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .spacer {
   width: 100%;
   height: 30px;
@@ -361,7 +521,7 @@ export default {
   appearance: none;
   height: 25px; /* Specified height */
   color: #76b900;
-  background: #d3d3d3; /* Grey background */
+  //background: #d3d3d3; /* Grey background */
   outline: none; /* Remove outline */
   opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
   -webkit-transition: .2s; /* 0.2 seconds transition on hover */
@@ -382,14 +542,14 @@ export default {
   appearance: none;
   width: 25px; /* Set a specific slider handle width */
   height: 25px; /* Slider handle height */
-  background: #4CAF50; /* Green background */
+  background: #76b900; /* Green background */
   cursor: pointer; /* Cursor on hover */
 }
 
 .entryPointSlider::-moz-range-thumb {
   width: 25px; /* Set a specific slider handle width */
   height: 25px; /* Slider handle height */
-  background: #4CAF50; /* Green background */
+  background: #76b900; /* Green background */
   cursor: pointer; /* Cursor on hover */
 }
 
@@ -419,12 +579,6 @@ export default {
   width: 35px;
 }
 
-.scenarioBlock {
-  display: inline-block;
-  height: 30%;
-  width: 40%;
-  margin: 10px;
-}
 
 .scenarioBlock {
   display: inline-block;
@@ -459,14 +613,16 @@ export default {
 }
 
 .scenarioButton {
-  background-color: lightgray;
+  background-color: transparent;
+  outline: lightgrey;
   width: 100%;
   margin: 10px;
   border-radius: 4px;
 }
 
 .scenarioButton:disabled {
-  background-color: white;
+  outline: #76b900;
+  background-color: transparent;
   width: 100%;
   margin: 10px;
 }
@@ -534,5 +690,95 @@ export default {
   margin: 20px;
   padding: 10px 20px;
   border-radius: 4px;
+}
+
+$player-bg: #fff;
+$player-border-color: darken($player-bg, 12%);
+$player-link-color: darken($player-bg, 75%);
+$player-progress-color: $player-link-color;
+$player-text-color: $player-link-color;
+$player-timeline-color: $player-border-color;
+
+.player {
+  background-color: $player-bg;
+  border-radius: 5px;
+  border: 1px solid $player-border-color;
+  box-shadow: 0 5px 8px rgba(0,0,0,0.15);
+  color: $player-text-color;
+  display: inline-block;
+  line-height: 1.5625;
+  position: relative;
+}
+
+.player-controls {
+  display: flex;
+
+  > div {
+    border-right: 1px solid $player-border-color;
+
+    &:last-child {
+      border-right: none;
+    }
+
+    a {
+      color: $player-link-color;
+      display: block;
+      line-height: 0;
+      padding: 1em;
+      text-decoration: none;
+
+      svg {
+        display: inline-block;
+        width: 1.125rem;
+      }
+    }
+  }
+}
+.player-timeline {
+  background-color: $player-timeline-color;
+  height: 50%;
+  min-width: 200px;
+  position: relative;
+
+  .player-progress,
+  .player-seeker {
+    bottom: 0;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+  }
+
+  .player-progress {
+    background-color: $player-progress-color;
+    z-index: 1;
+  }
+
+  .player-seeker {
+    cursor: pointer;
+    width: 100%;
+    z-index: 2;
+  }
+}
+.player-time {
+  display: flex;
+  justify-content: space-between;
+
+  .player-time-current {
+    font-weight: 700;
+    padding-left: 5px;
+  }
+
+  .player-time-total {
+    opacity: 0.5;
+    padding-right: 5px;
+  }
+}
+
+.player-volume {
+  display: inline-block;
+  height: 1.1rem;
+  margin: 0 0 0 2px;
+  width: 6rem;
 }
 </style>

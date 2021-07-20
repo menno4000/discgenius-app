@@ -98,19 +98,22 @@ const actions =  {
     let _mixes = []
     mixes_data.forEach(m => {
       if (m !== null){
+        console.log(m)
         let new_mix = new Mix(
             m.title.split('_')[0],
             m.title,
-            getLengthFromSeconds(m.length),
             m.num_songs,
             m.bpm,
             m.id,
             m.progress)
         if ('title_mp3' in m){
-          new_mix.title_mp3 = m.title_mp3
+          const title_mp3 = m.title.substring(0, m.title.length-4)+'.mp3'
+          new_mix.title_mp3 = title_mp3
+          new_mix.url = API_URL + 'getMixMedia?name=' + title_mp3
         }
         if('length' in m){
           new_mix.length = getLengthFromSeconds(m.length)
+          new_mix.length_seconds = m.length
         }
         _mixes.push(new_mix)
       }
