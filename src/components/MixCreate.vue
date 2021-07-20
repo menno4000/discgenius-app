@@ -5,7 +5,7 @@
       <div class="stepDescription">
         <span>1. Select Songs for the new Mix</span>
       </div>
-      <div>
+      <div id="track1select">
         <select v-model="selected1"
                 @change="selectFirstSong"
                 class="audioSelect"
@@ -24,15 +24,21 @@
         <label class="songInfo">number of songs: {{ numSongs1 }}</label>
       </div>
       <div v-if="length1 !== 0">
-        <v-tooltip bottom>
+        <v-tooltip bottom :nudge-top="10">
           <template v-slot:activator="{ on, attrs }">
-            <input type="range"
-                   v-model="exitPoint"
-                   max="100"
-                   min="1"
-                   v-bind="attrs"
-                   v-on="on"
-                   class="entryPointSlider"/>
+            <div v-bind="attrs"
+                 v-on="on"
+                 class="entryPointSlider">
+              <v-slider
+                  max="100"
+                  min="0"
+                  hint="Entry Point"
+                  :color="exitPointSliderColors.preface"
+                  :track-color="exitPointSliderColors.exit"
+                  :thumb-color="sliderThumbColor"
+                  v-model="exitPoint"/>
+            </div>
+
           </template>
           <span>
             Control what part of the first track will be considered for beginning the transition
@@ -41,16 +47,20 @@
 
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
-            <span
-                v-bind="attrs"
-                v-on="on">
-              {{ convertExitPoint }}
-            </span>
+            <div v-bind="attrs"
+                 v-on="on"
+                 class="sliderControl">
+              <span>
+                {{ convertExitPoint }}
+              </span>
+            </div>
           </template>
-          <span>The last {{ convertExitPointPercent }}% of the first track will be scanned for usable transition areas</span>
+          <span>The last {{
+              convertExitPointPercent
+            }}% of the first track will be scanned for usable transition areas</span>
         </v-tooltip>
       </div>
-      <div>
+      <div id="track2select">
         <select v-model="selected2"
                 @change="selectSecondSong"
                 class="audioSelect"
@@ -69,47 +79,72 @@
         <label class="songInfo">number of songs: {{ numSongs2 }}</label>
       </div>
       <div v-if="length2 !== 0">
-        <v-slider
-            max="100"
-            min="0"
-            hint="Entry Point"
-            :color="entryPointSliderColors.entry"
-            :track-color="entryPointSliderColors.trail"
-            :thumb-color="sliderThumbColor"
-            v-model="entryPoint"
-            class="entryPointSlider">
-
-        </v-slider>
-<!--        <v-tooltip bottom>-->
-<!--          <template v-slot:activator="{ on, attrs }">-->
-<!--            <input type="range"-->
-<!--                   v-model="entryPoint"-->
-<!--                   max="100"-->
-<!--                   min="0"-->
-<!--                   v-bind="attrs"-->
-<!--                   v-on="on"-->
-<!--                   class="entryPointSlider"/>-->
-<!--          </template>-->
-<!--          <span>Control what part of the second Track will be used in the transition</span>-->
-<!--        </v-tooltip>-->
+        <v-tooltip bottom :nudge-top="10">
+          <template v-slot:activator="{ on, attrs }">
+            <div v-bind="attrs"
+                 v-on="on"
+                 class="entryPointSlider">
+              <v-slider
+                  max="100"
+                  min="0"
+                  hint="Entry Point"
+                  :color="entryPointSliderColors.entry"
+                  :track-color="entryPointSliderColors.trail"
+                  :thumb-color="sliderThumbColor"
+                  v-model="entryPoint"/>
+            </div>
+          </template>
+          <span>Control what part of the second Track will be used in the transition</span>
+        </v-tooltip>
 
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <span class="entryPointLabel"
                   v-bind="attrs"
                   v-on="on">
-              {{convertEntryPoint}}
+              {{ convertEntryPoint }}
             </span>
           </template>
-          <span>The first {{convertEntryPointPercent}}% of the second track will be scanned for usable transition areas</span>
+          <span>The first {{ convertEntryPointPercent }}% of the second track will be scanned for usable transition areas</span>
         </v-tooltip>
 
       </div>
-      <div class="tempoOverride">
-        <label class="tempoOverrideLabel">Override Mix Tempo?</label>
-        <input type="checkbox" class="tempoOverrideCheck" v-model="tempoOverride"/>
-        <input class="tempoOverrideInput" v-model="mixTempo" :placeholder="mixTempo"
-               :disabled="tempoOverride === false"/>
+      <div class="spacer"></div>
+      <div id="tempoOverride">
+        <div class="tempoOverride">
+          <v-tooltip bottom nudge-top="5">
+            <template v-slot:activator="{ on, attrs }">
+              <div class="tempoOverrideLabel"
+                   v-bind="attrs"
+                   v-on="on">
+
+                <label>
+                  Override Mix Tempo?
+                </label>
+              </div>
+
+            </template>
+            <span>You may override the Results tempo to your desired BPM. By default, the first tracks' tempo is used.</span>
+          </v-tooltip>
+        </div>
+        <div class="tempoOverride">
+          <input type="checkbox" class="tempoOverrideCheck" v-model="tempoOverride"/>
+        </div>
+        <v-tooltip bottom
+                   :disabled="tempoOverride === false"
+                   nudge-top="5">
+          <template v-slot:activator="{ on, attrs }">
+            <div class="tempoOverride"
+                 v-bind="attrs"
+                 v-on="on">
+              <input class="tempoOverrideInput"
+                     v-model="mixTempo"
+                     :placeholder="mixTempo"
+                     :disabled="tempoOverride === false"/>
+            </div>
+          </template>
+          <span>Enter the BPM you want the resulting mix to have.</span>
+        </v-tooltip>
       </div>
     </div>
     <div id="previewSelect"
@@ -118,7 +153,7 @@
       <div class="stepDescription">
         <span>2. Select a Mix Scenario</span>
       </div>
-      <div>
+      <div class="scenarioLegend">
         <div class="scenarioExplanation">
           <div>
             <label class="scenarioExplanationLabel">
@@ -126,17 +161,17 @@
             </label>
           </div>
           <div>
-            <label>
+            <label class="scenarioExplanationLabel">
               Each Scenario represents volume control for both tracks' High-, Mid- and Low-Frequency-Bands.
             </label>
           </div>
         </div>
         <div class="scenarioLegend">
-          <img src="@/assets/legend.png"/>
-        </div>
+          <img src="@/assets/legend.png"
+               class="scenarioLegendImage" />
+        </div >
       </div>
-      <div>
-
+      <div id="scenarioBlocks1">
         <div class="scenarioBlock">
           <button class="scenarioButton"
                   v-on:click="selectScenario('EQ_1.0')"
@@ -148,10 +183,12 @@
               <div class="player">
                 <div class="player-controls">
                   <div id="play">
-                    <a v-on:click.prevent="playing = !playing"  :title="(playing) ? 'Pause' : 'Play'" href="#">
+                    <a v-on:click.prevent="playing = !playing" :title="(playing) ? 'Pause' : 'Play'" href="#">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                        <path v-if="!playing" fill="currentColor" d="M15,10.001c0,0.299-0.305,0.514-0.305,0.514l-8.561,5.303C5.51,16.227,5,15.924,5,15.149V4.852c0-0.777,0.51-1.078,1.135-0.67l8.561,5.305C14.695,9.487,15,9.702,15,10.001z"/>
-                        <path v-else fill="currentColor" d="M15,3h-2c-0.553,0-1,0.048-1,0.6v12.8c0,0.552,0.447,0.6,1,0.6h2c0.553,0,1-0.048,1-0.6V3.6C16,3.048,15.553,3,15,3z M7,3H5C4.447,3,4,3.048,4,3.6v12.8C4,16.952,4.447,17,5,17h2c0.553,0,1-0.048,1-0.6V3.6C8,3.048,7.553,3,7,3z"/>
+                        <path v-if="!playing" fill="currentColor"
+                              d="M15,10.001c0,0.299-0.305,0.514-0.305,0.514l-8.561,5.303C5.51,16.227,5,15.924,5,15.149V4.852c0-0.777,0.51-1.078,1.135-0.67l8.561,5.305C14.695,9.487,15,9.702,15,10.001z"/>
+                        <path v-else fill="currentColor"
+                              d="M15,3h-2c-0.553,0-1,0.048-1,0.6v12.8c0,0.552,0.447,0.6,1,0.6h2c0.553,0,1-0.048,1-0.6V3.6C16,3.048,15.553,3,15,3z M7,3H5C4.447,3,4,3.048,4,3.6v12.8C4,16.952,4.447,17,5,17h2c0.553,0,1-0.048,1-0.6V3.6C8,3.048,7.553,3,7,3z"/>
                       </svg>
                     </a>
                   </div>
@@ -161,20 +198,28 @@
                       <div v-on:click="seek" class="player-seeker" title="Seek"></div>
                     </div>
                     <div class="player-time">
-                      <div class="player-time-current">{{ currentSeconds | convertTimeHHMMSS(currentSeconds)}}</div>
+                      <div class="player-time-current">{{ currentSeconds | convertTimeHHMMSS(currentSeconds) }}</div>
                       <div class="player-time-total">{{ durationSeconds | convertTimeHHMMSS(durationSeconds) }}</div>
                     </div>
                   </div>
                   <div id="volume">
-                    <a v-on:click.prevent="" v-on:mouseenter="showVolume = true" v-on:mouseleave="showVolume = false" :title="volumeTitle" href="#">
+                    <a v-on:click.prevent="" v-on:mouseenter="showVolume = true" v-on:mouseleave="showVolume = false"
+                       :title="volumeTitle" href="#">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                        <path fill="currentColor" d="M19,13.805C19,14.462,18.462,15,17.805,15H1.533c-0.88,0-0.982-0.371-0.229-0.822l16.323-9.055C18.382,4.67,19,5.019,19,5.9V13.805z"/>
+                        <path fill="currentColor"
+                              d="M19,13.805C19,14.462,18.462,15,17.805,15H1.533c-0.88,0-0.982-0.371-0.229-0.822l16.323-9.055C18.382,4.67,19,5.019,19,5.9V13.805z"/>
                       </svg>
-                      <input v-model.lazy.number="volume" v-show="showVolume" class="player-volume" type="range" min="0" max="100"/>
+                      <input v-model.lazy.number="volume" v-show="showVolume" class="player-volume" type="range" min="0"
+                             max="100"/>
                     </a>
                   </div>
                 </div>
               </div>
+            </div>
+            <div id="select-scenario">
+              <button class="selectScenarioButton">
+                Select
+              </button>
             </div>
           </div>
         </div>
@@ -185,16 +230,16 @@
             <img class="scenarioPreview" src="@/assets/EQ_cut.png"/>
           </button>
         </div>
-        <div>
-          <div class="scenarioName">
-            <label>Three-Band-EQ 1</label>
-          </div>
-          <div class="scenarioName">
-            <label>Three-Band-EQ 2 (Bass Cut)</label>
-          </div>
+      </div>
+      <div id="scenarioNames1">
+        <div class="scenarioName">
+          <label>Three-Band-EQ 1</label>
+        </div>
+        <div class="scenarioName">
+          <label>Three-Band-EQ 2 (Bass Cut)</label>
         </div>
       </div>
-      <div>
+      <div id="scenarioBlocks2">
         <div class="scenarioBlock">
           <button class="scenarioButton"
                   v-on:click="selectScenario('VFF_1.0')"
@@ -210,7 +255,7 @@
           </button>
         </div>
       </div>
-      <div>
+      <div id="scenarioNames2">
         <div class="scenarioName">
           <label>Volumetric Fade 1</label>
         </div>
@@ -254,7 +299,8 @@
         </div>
       </div>
     </div>
-    <audio ref="audio" id="audio-driver" :src="currentPreview" v-on:timeupdate="update" v-on:loadeddata="load" v-on:pause="playing = false" v-on:seek="playing = true" preload="auto" style="display: none;"></audio>
+    <audio ref="audio" id="audio-driver" :src="currentPreview" v-on:timeupdate="update" v-on:loadeddata="load"
+           v-on:pause="playing = false" v-on:seek="playing = true" preload="auto" style="display: none;"></audio>
   </div>
 </template>
 
@@ -265,10 +311,8 @@ import {v4 as uuidv4} from 'uuid'
 import LoginState from "@/components/LoginState";
 import DataService from "@/services/DataService";
 
-// TODO hover slider explanation (text and slider)
-// TODO hover tempo override (text and checkbox)
+
 // TODO scenario preview clips with audio playback
-// TODO adjust color scheme
 export default {
   components: {LoginState},
   data() {
@@ -293,7 +337,7 @@ export default {
       exitPoint: 70.0,
       sliderThumbColor: '#20b900',
       exitPointSliderColors: {
-        preface: '#8a9869',
+        preface: '#c4d48a',
         exit: '#76b900',
       },
       entryPointSliderColors: {
@@ -319,13 +363,13 @@ export default {
       return (this.exitPoint / 100);
     },
     convertExitPointPercent() {
-      return (this.exitPoint - 100)*-1;
+      return (this.exitPoint - 100) * -1;
     },
     convertEntryPoint() {
       return (this.entryPoint / 100);
     },
     convertEntryPointPercent() {
-      return (this.exitPoint - 100)*-1;
+      return (this.exitPoint - 100) * -1;
     },
     songs() {
       return this.$store.state.songs;
@@ -363,7 +407,7 @@ export default {
       return parseInt(this.currentSeconds / this.durationSeconds * 100);
     },
     progressStyle() {
-      return { width: `${this.percentComplete}%` };
+      return {width: `${this.percentComplete}%`};
     },
     volumeTitle() {
       return `Volume (${this.volume}%)`;
@@ -377,7 +421,7 @@ export default {
     convertTimeHHMMSS(val) {
       console.log('incoming time (s): ', val)
       let hhmmss = new Date(0).toISOString().substr(11, 8)
-      if (!isNaN(val)){
+      if (!isNaN(val)) {
         hhmmss = new Date(val * 1000).toISOString().substr(11, 8);
       }
       return hhmmss.indexOf("00:") === 0 ? hhmmss.substr(3) : hhmmss;
@@ -421,7 +465,7 @@ export default {
     },
     async submit() {
       this.submitted = true;
-      const exitPoint = Math.round(((1-this.convertExitPoint) * 100)) / 100
+      const exitPoint = Math.round(((1 - this.convertExitPoint) * 100)) / 100
 
       const submit_response = await DataService.createMix(this.mixName,
           this.selected1.title_wav,
@@ -432,7 +476,7 @@ export default {
           this.numSongs2,
           this.convertEntryPoint,
           exitPoint)
-      if (submit_response === undefined){
+      if (submit_response === undefined) {
         alert("Mix Creation failed")
       } else {
         const mixId = submit_response.data.message.split(':')[1].trim()
@@ -472,7 +516,7 @@ export default {
       this.currentSeconds = parseInt(this.$refs.audio.currentTime);
     },
     async playbackScenariosample(sample) {
-      console.log('initiating mix playback from url: ',mix.url)
+      console.log('initiating mix playback from url: ', mix.url)
       console.log(this.mixes)
       this.$refs.audio.src = mix.url
       this.currentSong = mix.url
@@ -519,7 +563,7 @@ export default {
 .entryPointSlider {
   -webkit-appearance: none; /* Override default CSS styles */
   appearance: none;
-  height: 25px; /* Specified height */
+  height: 30px; /* Specified height */
   color: #76b900;
   //background: #d3d3d3; /* Grey background */
   outline: none; /* Remove outline */
@@ -553,6 +597,11 @@ export default {
   cursor: pointer; /* Cursor on hover */
 }
 
+.sliderControl {
+  display: inline-block;
+  vertical-align: middle;
+}
+
 .entryPointLabel {
   display: inline-block;
   vertical-align: middle;
@@ -563,6 +612,8 @@ export default {
 .tempoOverride {
   margin-top: 10px;
   margin-bottom: 10px;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .tempoOverrideCheck {
@@ -577,6 +628,9 @@ export default {
   vertical-align: middle;
   text-align: center;
   width: 35px;
+  padding: 4px;
+  border-radius: 5px;
+  outline: lightgrey solid thin;
 }
 
 
@@ -585,6 +639,7 @@ export default {
   height: 30%;
   width: 40%;
   margin: 10px;
+  outline: #e9f1e2 solid 2px;
 }
 
 .scenarioName {
@@ -598,18 +653,27 @@ export default {
 .scenarioExplanation {
   display: inline-block;
   width: 40%;
-  height: 140px;
   margin-right: 10px;
   text-align: center;
+  align-content: center;
+  vertical-align: middle;
 }
 
 .scenarioExplanationLabel {
   padding: 20px;
+  display: inline-block;
+  align-content: center;
 }
 
 .scenarioLegend {
   display: inline-block;
   align-content: center;
+}
+.scenarioLegendImage{
+  display: inline-block;
+  align-content: center;
+  vertical-align: middle;
+  width: 70%;
 }
 
 .scenarioButton {
@@ -628,10 +692,12 @@ export default {
 }
 
 .scenarioPreview {
-  padding: 10px;
+  padding-right: 21px;
   height: 100%;
   width: 100%;
+  horiz-align: center;
   align-content: center;
+  margin-right: 10px;
 }
 
 .mixNameInput {
@@ -682,7 +748,6 @@ export default {
   padding: 15px 30px;
   border-radius: 4px;
 }
-
 .downloadButton:disabled {
   color: white;
   font-size: 16px;
@@ -690,6 +755,17 @@ export default {
   margin: 20px;
   padding: 10px 20px;
   border-radius: 4px;
+}
+
+.selectScenarioButton {
+  color: white;
+  font-size: 16px;
+  background-color: #76b900;
+  margin: 20px;
+  padding: 15px 10px;
+  border-radius: 4px;
+  display: inline-block;
+  align-content: center;
 }
 
 $player-bg: #fff;
@@ -703,9 +779,10 @@ $player-timeline-color: $player-border-color;
   background-color: $player-bg;
   border-radius: 5px;
   border: 1px solid $player-border-color;
-  box-shadow: 0 5px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.15);
   color: $player-text-color;
   display: inline-block;
+  align-content: center;
   line-height: 1.5625;
   position: relative;
 }
@@ -734,6 +811,7 @@ $player-timeline-color: $player-border-color;
     }
   }
 }
+
 .player-timeline {
   background-color: $player-timeline-color;
   height: 50%;
@@ -760,6 +838,7 @@ $player-timeline-color: $player-border-color;
     z-index: 2;
   }
 }
+
 .player-time {
   display: flex;
   justify-content: space-between;

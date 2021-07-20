@@ -33,7 +33,7 @@
           <div class="songDiv">
             <div class="mixNameLabel">{{mix.mix.title}}</div>
             <div class="mixNumSongsLabel">{{mix.mix.numSongs}}</div>
-            <div class="mixLengthLabel">{{mix.mix.length}}</div>
+            <div class="mixLengthLabel">{{mix.mix.length_seconds}}</div>
             <div class="mixTempoLabel">{{mix.mix.tempo}}</div>
             <vue-ellipse-progress :progress="mix.progress"
                                   :legend="true"
@@ -115,6 +115,9 @@ export default{
       showVolume: false,
       volume: 100
     }
+  },
+  mounted() {
+    console.log(this.mixes)
   },
   computed: {
     mixes(){

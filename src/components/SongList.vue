@@ -149,6 +149,7 @@ export default {
     this.audio.addEventListener('loadeddata', this.load);
     this.audio.addEventListener('pause', () => { this.playing = false; });
     this.audio.addEventListener('play', () => { this.playing = true; });
+    console.log(this.songs)
   },
   computed: {
     songs() {
@@ -266,29 +267,10 @@ export default {
       this.audio.src = song.url
       this.currentSong = song.url
       this.durationSeconds = Math.round(song.length_seconds)
-      // this.durationSeconds =  this.$refs.audio.duration
       console.log('loaded song is ', this.durationSeconds, ' seconds long.')
       this.currentSeconds = 0
       this.playing = false
-      // this.playbackFile = ''
-      // console.log("fetching song " + song.title_mp3 + " for playback")
-      //
-      // this.playbackFile = "http://localhost:9001/getSong?name=" + song.title_mp3
-      // // console.log('fetching song playback')
-      // // const song_download_response = await DataService.getSongFile(song.title_mp3)
-      // // if (song_download_response === undefined) {
-      // //   console.log("song download failed")
-      // //   this.playbackFile = ''
-      // // } else {
-      // //   console.log(song_download_response)
-      // //   let blob = new Blob([song_download_response.data])
-      // //   let link = document.createElement('a')
-      // //   link.href = window.URL.createObjectURL(blob)
-      // //   link.setAttribute('download', song.title_mp3)
-      // //
-      // //   this.playbackFile = link
-      // //   console.log(this.playbackFile)
-      // // }
+
     }
   }
 
@@ -351,9 +333,11 @@ export default {
   display: inline-block;
   vertical-align: middle;
   align-self: center;
+  width: 5%;
 }
 
 .deleteButton {
+  size: auto;
   color: white;
   font-size: 16px;
   background-color: #ff5d44;
