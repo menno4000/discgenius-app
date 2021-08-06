@@ -32,6 +32,9 @@
         <div class="songTempoLabel">
           <span>Tempo</span>
         </div>
+        <div class="collapsePlaceholder">
+
+        </div>
       </div>
     </div>
     <div id="songItems">
@@ -60,14 +63,13 @@
                       </a>
                     </div>
                     <div id="seek">
-                      <div class="player-timeline">
-                        <div :style="progressStyle" class="player-progress"></div>
-                        <div v-on:click="seek" class="player-seeker" title="Seek"></div>
-                      </div>
-                      <div class="player-time">
-                        <div class="player-time-current">{{ currentTime }}</div>
-                        <div class="player-time-total">{{ durationTime }}</div>
-                      </div>
+                        <div v-on:click="seek" class="player-progress" title="Time played : Total time">
+                          <div :style="{ width: percentComplete + '%' }" class="player-seeker"></div>
+                        </div>
+                        <div class="player-time">
+                          <div class="player-time-current">{{ currentTime }}</div>
+                          <div class="player-time-total">{{ durationTime }}</div>
+                        </div>
                     </div>
                     <div id="volume">
                       <a v-on:click.prevent="" v-on:mouseenter="showVolume = true" v-on:mouseleave="showVolume = false" :title="volumeTitle" href="#">
@@ -90,7 +92,8 @@
         </v-expansion-panel>
       </v-expansion-panels>
     </div>
-    <audio ref="audio" id="audio-driver" :src="currentSong" v-on:timeupdate="update" v-on:loadeddata="load" v-on:pause="playing = false" v-on:seek="playing = true" preload="auto" style="display: none;" controls></audio>
+<!--    <audio ref="audio" id="audio-driver" :src="currentSong" v-on:timeupdate="update" v-on:loadeddata="load" v-on:pause="playing = false" v-on:seek="playing = true" preload="auto" style="display: none;" controls></audio>-->
+    <audio ref="audio" id="audio-driver" :src="currentSong"  preload="none" style="display: none;"></audio>
   </div>
 </template>
 
@@ -149,7 +152,6 @@ export default {
     this.audio.addEventListener('loadeddata', this.load);
     this.audio.addEventListener('pause', () => { this.playing = false; });
     this.audio.addEventListener('play', () => { this.playing = true; });
-    console.log(this.songs)
   },
   computed: {
     songs() {
@@ -181,11 +183,11 @@ export default {
   },
   watch: {
     playing(value) {
-      if (value) { return this.$refs.audio.play(); }
-      this.$refs.audio.pause();
+      if (value) { return this.audio.play(); }
+      this.audio.pause();
     },
     volume(value) {
-      this.$refs.audio.volume = this.volume / 100;
+      this.audio.volume = this.volume / 100;
     },
   },
   methods: {
@@ -198,22 +200,33 @@ export default {
       throw new Error('Failed to load sound file.');
     },
     seek(e) {
-      if (!this.loaded) return;
-      console.log("seeking new audio position");
-      const bounds = e.target.getBoundingClientRect();
-      const seekPos = (e.clientX - bounds.left) / bounds.width;
-      const newTimeRaw = this.audio.duration * seekPos
-      const newTime = parseInt(newTimeRaw);
-      console.log("new time raw: ", newTimeRaw)
-      console.log("new time parsed: ", newTime)
-      let player = document.getElementById('audio-driver')
+      // if (!this.loaded) return;
+      // console.log("seeking new audio position");
+      // const bounds = e.target.getBoundingClientRect();
+      // const seekPos = (e.clientX - bounds.left) / bounds.width;
+      // const newTimeRaw = this.audio.duration * seekPos
+      // const newTime = parseInt(newTimeRaw);
+      // console.log("new time raw: ", newTimeRaw)
+      // console.log("new time parsed: ", newTime)
+      // let player = document.getElementById('audio-driver')
       // player.currentTime = newTime
       // // console.log(player.currentTime)
-      const newTimeString = newTime.toFixed(1)
-      console.log("setting new time: ", newTime)
-      this.audio.currentTime = newTime
+      // const newTimeString = newTime.toFixed(1)
+      // console.log("setting new time: ", newTime)
+      // this.audio.currentTime = newTime
       // console.log(this.audio.currentTime)
       // player.currentTIme = newTimeString
+      if (!this.playing || e.target.tagName === 'SPAN') {
+        return;
+      }
+
+      const el = e.target.getBoundingClientRect();
+      const seekPos = (e.clientX - el.left) / el.width;
+      const newTime = parseInt(this.audio.duration * seekPos) + ".0";
+      console.log(newTime)
+
+      this.audio.currentTime = newTime.toString()
+      console.log(this.audio.currentTime)
     },
     stop() {
       this.playing = false;
@@ -264,6 +277,7 @@ export default {
     },
     async playbackSong(song) {
       console.log('initiating track playback from url: ',song.url)
+      this.loaded = false
       this.audio.src = song.url
       this.currentSong = song.url
       this.durationSeconds = Math.round(song.length_seconds)
@@ -297,8 +311,8 @@ export default {
   display: inline-block;
   vertical-align: middle;
   text-align: center;
+  width: 200px;
   margin-left: 10%;
-  width: 30%;
 }
 
 .songNameLabel > span {
@@ -310,7 +324,7 @@ export default {
   vertical-align: middle;
   text-align: center;
   width: 5%;
-  margin-left: 5%;
+  margin-left: 25px;
 }
 
 .songTempoLabel > span {
@@ -376,19 +390,26 @@ export default {
 $player-bg: #fff;
 $player-border-color: darken($player-bg, 12%);
 $player-link-color: darken($player-bg, 75%);
-$player-progress-color: $player-link-color;
+$player-progress-color: $player-border-color;
 $player-text-color: $player-link-color;
-$player-timeline-color: $player-border-color;
+//$player-timeline-color: $player-border-color;
+$player-seeker-color: $player-link-color;
+
+.player-wrapper {
+  align-items: center;
+  background-color: $player-bg;
+  display: flex;
+  justify-content: center;
+}
 
 .player {
   background-color: $player-bg;
-  border-radius: 5px;
   border: 1px solid $player-border-color;
+  border-radius: 5px;
   box-shadow: 0 5px 8px rgba(0,0,0,0.15);
   color: $player-text-color;
   display: inline-block;
   line-height: 1.5625;
-  position: relative;
 }
 
 .player-controls {
@@ -415,32 +436,48 @@ $player-timeline-color: $player-border-color;
     }
   }
 }
-.player-timeline {
-  background-color: $player-timeline-color;
+.player-progress {
+  background-color: $player-progress-color;
+  cursor: pointer;
   height: 50%;
   min-width: 200px;
   position: relative;
 
-  .player-progress,
   .player-seeker {
+    background-color: $player-seeker-color;
     bottom: 0;
-    height: 100%;
     left: 0;
     position: absolute;
     top: 0;
   }
-
-  .player-progress {
-    background-color: $player-progress-color;
-    z-index: 1;
-  }
-
-  .player-seeker {
-    cursor: pointer;
-    width: 100%;
-    z-index: 2;
-  }
 }
+
+//.player-timeline {
+//  background-color: $player-timeline-color;
+//  height: 50%;
+//  min-width: 200px;
+//  position: relative;
+//
+//  .player-progress,
+//  .player-seeker {
+//    bottom: 0;
+//    height: 100%;
+//    left: 0;
+//    position: absolute;
+//    top: 0;
+//  }
+//
+//  .player-progress {
+//    background-color: $player-progress-color;
+//    z-index: 1;
+//  }
+//
+//  .player-seeker {
+//    cursor: pointer;
+//    width: 100%;
+//    z-index: 2;
+//  }
+//}
 .player-time {
   display: flex;
   justify-content: space-between;
@@ -461,6 +498,11 @@ $player-timeline-color: $player-border-color;
   height: 1.1rem;
   margin: 0 0 0 2px;
   width: 6rem;
+}
+
+.collapsePlaceholder {
+  display: inline-block;
+  margin-left: 30px;
 }
 
 </style>

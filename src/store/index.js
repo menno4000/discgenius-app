@@ -85,7 +85,7 @@ const actions =  {
           s.id
       )
       if ('title_mp3' in s){
-        newSong.url = API_URL + 'getSongMedia?name=' + s.title_mp3
+        newSong.url = API_URL + 'getSongBytes/' + s.title_mp3
         newSong.title_mp3 = s.title_mp3
       }
       _songs.push(newSong)

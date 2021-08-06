@@ -33,7 +33,7 @@
           <div class="songDiv">
             <div class="mixNameLabel">{{mix.mix.title}}</div>
             <div class="mixNumSongsLabel">{{mix.mix.numSongs}}</div>
-            <div class="mixLengthLabel">{{mix.mix.length_seconds}}</div>
+            <div class="mixLengthLabel">{{mix.mix.length}}</div>
             <div class="mixTempoLabel">{{mix.mix.tempo}}</div>
             <vue-ellipse-progress :progress="mix.progress"
                                   :legend="true"
@@ -285,7 +285,7 @@ export default{
   margin-right: 20px;
 }
 .progressPlaceholder{
-  width: 50px;
+  padding: 40px;
 }
 .downloadButton{
   display: inline-block;
