@@ -99,23 +99,27 @@ const actions =  {
     mixes_data.forEach(m => {
       if (m !== null){
         console.log(m)
-        let new_mix = new Mix(
+        let newMix = new Mix(
             m.title.split('_')[0],
             m.title,
             m.num_songs,
             m.bpm,
             m.id,
-            m.progress)
+            m.progress,
+            getLengthFromSeconds(m.length),
+            m.length)
         if ('title_mp3' in m){
           const title_mp3 = m.title.substring(0, m.title.length-4)+'.mp3'
-          new_mix.title_mp3 = title_mp3
-          new_mix.url = API_URL + 'getMixMedia?name=' + title_mp3
+          newMix.title_mp3 = title_mp3
+          newMix.url = API_URL + 'getMixBytes/' + title_mp3
         }
-        if('length' in m){
-          new_mix.length = getLengthFromSeconds(m.length)
-          new_mix.length_seconds = m.length
+        if ('song_list' in m){
+          newMix.song_list = m.song_list
         }
-        _mixes.push(new_mix)
+        if ('transition_points' in m){
+          newMix.transition_points = m.transition_points
+        }
+        _mixes.push(newMix)
       }
     })
     context.commit("setMixes", _mixes)

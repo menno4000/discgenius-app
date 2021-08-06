@@ -101,10 +101,6 @@
 import Song from "../model/Song";
 import DataService from "@/services/DataService";
 
-// TODO skip playback
-// TODO communicate dropdown with icon
-// TODO table header realignment
-
 const convertTimeHHMMSS = (val) => {
   let hhmmss = new Date(val * 1000).toISOString().substr(11, 8);
 
@@ -127,23 +123,7 @@ export default {
       playing: false,
       previousVolume: 35,
       showVolume: false,
-      volume: 100
-
-
-      // playbackFile: '',
-      // audioPlayer: undefined,
-      // isPlaying: false,
-      // isLoaded: false,
-      // isCurrentlyPlaying: "",
-      // volume: 100,
-      // durationSeconds: 0,
-      // currentSeconds: 0,
-      // progressPercentageValue: "0%",
-      // currentSong: {
-      //   id: "",
-      //   title: "",
-      //   url: "",
-      // },
+      volume: 30
     }
   },
   mounted() {
@@ -152,6 +132,8 @@ export default {
     this.audio.addEventListener('loadeddata', this.load);
     this.audio.addEventListener('pause', () => { this.playing = false; });
     this.audio.addEventListener('play', () => { this.playing = true; });
+    console.log(this.songs)
+
   },
   computed: {
     songs() {
@@ -191,51 +173,6 @@ export default {
     },
   },
   methods: {
-    load() {
-      if (this.audio.readyState >= 2) {
-        this.loaded = true;
-        this.durationSeconds = parseInt(this.audio.duration);
-        return this.playing = false;
-      }
-      throw new Error('Failed to load sound file.');
-    },
-    seek(e) {
-      // if (!this.loaded) return;
-      // console.log("seeking new audio position");
-      // const bounds = e.target.getBoundingClientRect();
-      // const seekPos = (e.clientX - bounds.left) / bounds.width;
-      // const newTimeRaw = this.audio.duration * seekPos
-      // const newTime = parseInt(newTimeRaw);
-      // console.log("new time raw: ", newTimeRaw)
-      // console.log("new time parsed: ", newTime)
-      // let player = document.getElementById('audio-driver')
-      // player.currentTime = newTime
-      // // console.log(player.currentTime)
-      // const newTimeString = newTime.toFixed(1)
-      // console.log("setting new time: ", newTime)
-      // this.audio.currentTime = newTime
-      // console.log(this.audio.currentTime)
-      // player.currentTIme = newTimeString
-      if (!this.playing || e.target.tagName === 'SPAN') {
-        return;
-      }
-
-      const el = e.target.getBoundingClientRect();
-      const seekPos = (e.clientX - el.left) / el.width;
-      const newTime = parseInt(this.audio.duration * seekPos) + ".0";
-      console.log(newTime)
-
-      this.audio.currentTime = newTime.toString()
-      console.log(this.audio.currentTime)
-    },
-    stop() {
-      this.playing = false;
-      this.audio.currentTime = 0;
-    },
-    update(e) {
-      this.currentSeconds = parseInt(this.audio.currentTime);
-    },
-
     async deleteSong(song) {
       if (confirm("Do you really want to delete Song " + song.title + "?")) {
         const delete_response = await DataService.deleteSong(song.id)
@@ -275,6 +212,31 @@ export default {
         await this.$store.dispatch("fetchSongs")
       }
     },
+    load() {
+      if (this.audio.readyState >= 2) {
+        this.loaded = true;
+        this.durationSeconds = parseInt(this.audio.duration);
+        return this.playing = false;
+      }
+      throw new Error('Failed to load sound file.');
+    },
+    seek(e) {
+      if (!this.playing || e.target.tagName === 'SPAN') {
+        return;
+      }
+      const el = e.target.getBoundingClientRect();
+      const seekPos = (e.clientX - el.left) / el.width;
+      const newTime = parseInt(this.audio.duration * seekPos) + ".0";
+      this.audio.currentTime = newTime.toString()
+    },
+    stop() {
+      this.playing = false;
+      this.audio.currentTime = 0;
+    },
+    update(e) {
+      this.currentSeconds = parseInt(this.audio.currentTime);
+    },
+
     async playbackSong(song) {
       console.log('initiating track playback from url: ',song.url)
       this.loaded = false
@@ -392,7 +354,6 @@ $player-border-color: darken($player-bg, 12%);
 $player-link-color: darken($player-bg, 75%);
 $player-progress-color: $player-border-color;
 $player-text-color: $player-link-color;
-//$player-timeline-color: $player-border-color;
 $player-seeker-color: $player-link-color;
 
 .player-wrapper {
@@ -452,32 +413,6 @@ $player-seeker-color: $player-link-color;
   }
 }
 
-//.player-timeline {
-//  background-color: $player-timeline-color;
-//  height: 50%;
-//  min-width: 200px;
-//  position: relative;
-//
-//  .player-progress,
-//  .player-seeker {
-//    bottom: 0;
-//    height: 100%;
-//    left: 0;
-//    position: absolute;
-//    top: 0;
-//  }
-//
-//  .player-progress {
-//    background-color: $player-progress-color;
-//    z-index: 1;
-//  }
-//
-//  .player-seeker {
-//    cursor: pointer;
-//    width: 100%;
-//    z-index: 2;
-//  }
-//}
 .player-time {
   display: flex;
   justify-content: space-between;

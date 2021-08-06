@@ -54,6 +54,24 @@
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <div class="songDiv">
+            <div class="songListWrapper">
+              <div class="songListLabel">
+                <span>Song List:</span>
+              </div>
+              <div class="songList">
+                <span class="songListItem" v-for="song in mix.mix.song_list">
+                  {{song}}
+                </span>
+              </div>
+            </div>
+            <div class="transitionPointsWrapper">
+              <div class="transitionPointLabel">
+                <span>Transition Points:</span>
+              </div>
+              <div class="transitionPoints">
+                <span v-for="tp_triplet in currentTransitionPoints">{{tp_triplet}}</span>
+              </div>
+            </div>
             <div id="audio-player" class="player-wrapper">
               <div class="player">
                 <div class="player-controls">
@@ -66,13 +84,12 @@
                     </a>
                   </div>
                   <div id="seek">
-                    <div class="player-timeline">
-                      <div :style="progressStyle" class="player-progress"></div>
-                      <div v-on:click="seek" class="player-seeker" title="Seek"></div>
+                    <div v-on:click="seek" class="player-progress" title="Time played : Total time">
+                      <div :style="{ width: percentComplete + '%' }" class="player-seeker"></div>
                     </div>
                     <div class="player-time">
-                      <div class="player-time-current">{{ currentSeconds | convertTimeHHMMSS(currentSeconds)}}</div>
-                      <div class="player-time-total">{{ durationSeconds | convertTimeHHMMSS(durationSeconds) }}</div>
+                      <div class="player-time-current">{{ currentTime }}</div>
+                      <div class="player-time-total">{{ durationTime }}</div>
                     </div>
                   </div>
                   <div id="volume">
@@ -93,19 +110,31 @@
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
-    <audio ref="audio" id="audio-driver" :src="currentMix" v-on:timeupdate="update" v-on:loadeddata="load" v-on:pause="playing = false" v-on:seek="playing = true" preload="auto" style="display: none;"></audio>
+    <audio ref="audio" id="audio-driver" :src="currentMix"  preload="none" style="display: none;"></audio>
   </div>
 </template>
 
 <script>
 import Mix from "@/model/Mix";
 import DataService from "@/services/DataService";
+
+
+const convertTimeHHMMSS = (val) => {
+  let hhmmss = new Date(val * 1000).toISOString().substr(11, 8);
+
+  return hhmmss.indexOf("00:") === 0 ? hhmmss.substr(3) : hhmmss;
+};
+
 // TODO unfold for songs in mix, mix playback
 export default{
   data(){
     return {
       defaultSong:
           "https://res.cloudinary.com/dmf10fesn/video/upload/v1548882863/audio/Post_Malone_-_Wow._playvk.com.mp3",
+      uploading: false,
+      file: '',
+
+      audio: undefined,
       currentMix: '',
       currentSeconds: 0,
       durationSeconds: 0,
@@ -113,11 +142,18 @@ export default{
       playing: false,
       previousVolume: 35,
       showVolume: false,
-      volume: 100
+      volume: 30,
+
+      currentTransitionPoints: ''
     }
   },
   mounted() {
-    console.log(this.mixes)
+    this.audio = this.$el.querySelectorAll('audio')[0];
+    this.audio.addEventListener('timeupdate', this.update);
+    this.audio.addEventListener('loadeddata', this.load);
+    this.audio.addEventListener('pause', () => { this.playing = false; });
+    this.audio.addEventListener('play', () => { this.playing = true; });
+    // console.log(this.mixes)
   },
   computed: {
     mixes(){
@@ -135,6 +171,12 @@ export default{
       }
       return mixesWithProg
     },
+    currentTime() {
+      return convertTimeHHMMSS(this.currentSeconds);
+    },
+    durationTime() {
+      return convertTimeHHMMSS(this.durationSeconds);
+    },
     percentComplete() {
       return parseInt(this.currentSeconds / this.durationSeconds * 100);
     },
@@ -151,15 +193,14 @@ export default{
     }
     this.pollMixes()
   },
-  filters: {
-    convertTimeHHMMSS(val) {
-      console.log('incoming time (s): ', val)
-      let hhmmss = new Date(0).toISOString().substr(11, 8)
-      if (!isNaN(val)){
-        hhmmss = new Date(val * 1000).toISOString().substr(11, 8);
-      }
-      return hhmmss.indexOf("00:") === 0 ? hhmmss.substr(3) : hhmmss;
-    }
+  watch: {
+    playing(value) {
+      if (value) { return this.audio.play(); }
+      this.audio.pause();
+    },
+    volume(value) {
+      this.audio.volume = this.volume / 100;
+    },
   },
   methods: {
     async pollMixes() {
@@ -196,39 +237,44 @@ export default{
       }
     },
     load() {
-      if (this.$refs.audio.readyState >= 2) {
+      if (this.audio.readyState >= 2) {
         this.loaded = true;
+        this.durationSeconds = parseInt(this.audio.duration);
         return this.playing = false;
       }
       throw new Error('Failed to load sound file.');
     },
     seek(e) {
-      if (!this.loaded) return;
-      const bounds = e.target.getBoundingClientRect();
-      const seekPos = (e.clientX - bounds.left) / bounds.width;
-      const currentDuration = this.durationSeconds
-      const newTime = parseInt(currentDuration * seekPos);
-      console.log('new currentTime: ', newTime)
-      let player = document.getElementById('audio-driver')
-      player.currentTime = newTime;
-      console.log(player.currentTime)
+      if (!this.playing || e.target.tagName === 'SPAN') {
+        return;
+      }
+      const el = e.target.getBoundingClientRect();
+      const seekPos = (e.clientX - el.left) / el.width;
+      const newTime = parseInt(this.audio.duration * seekPos) + ".0";
+      this.audio.currentTime = newTime.toString()
     },
     stop() {
       this.playing = false;
-      this.$refs.audio.currentTime = 0;
+      this.audio.currentTime = 0;
     },
     update(e) {
-      this.currentSeconds = parseInt(this.$refs.audio.currentTime);
+      this.currentSeconds = parseInt(this.audio.currentTime);
     },
     async playbackMix(mix) {
       console.log('initiating mix playback from url: ',mix.url)
       console.log(this.mixes)
-      this.$refs.audio.src = mix.url
+      this.audio.src = mix.url
       this.currentMix = mix.url
       this.durationSeconds = Math.round(mix.length_seconds)
       console.log('loaded mix is ', this.durationSeconds, ' seconds long.')
       this.currentSeconds = 0
       this.playing = false
+
+      const transition_seconds = Array.from(mix.transition_points, tp => convertTimeHHMMSS(tp))
+
+      this.currentTransitionPoints = [].concat.apply([], transition_seconds.map(function(elem, i){
+        return i % 3 ? [] : [transition_seconds.slice(i, i + 3)]
+      }))
     }
   }
 }
@@ -287,6 +333,32 @@ export default{
 .progressPlaceholder{
   padding: 40px;
 }
+
+.songListWrapper{
+  width: 80%;
+  align-content: center;
+}
+.songListLabel{
+  display: inline-block;
+}
+.songList{
+  margin-left: 10px;
+  display: inline-block;
+}
+.songListItem{
+  margin-left: 10px;
+}
+
+.transitionPointsWrapper{
+  width: 80%;
+}
+.transitionPointLabel{
+  display: inline-block;
+}
+.transitionPoints{
+  margin-left: 10px;
+  display: inline-block;
+}
 .downloadButton{
   display: inline-block;
   vertical-align: middle;
@@ -327,19 +399,25 @@ export default{
 $player-bg: #fff;
 $player-border-color: darken($player-bg, 12%);
 $player-link-color: darken($player-bg, 75%);
-$player-progress-color: $player-link-color;
+$player-progress-color: $player-border-color;
 $player-text-color: $player-link-color;
-$player-timeline-color: $player-border-color;
+$player-seeker-color: $player-link-color;
+
+.player-wrapper {
+  align-items: center;
+  background-color: $player-bg;
+  display: flex;
+  justify-content: center;
+}
 
 .player {
   background-color: $player-bg;
-  border-radius: 5px;
   border: 1px solid $player-border-color;
+  border-radius: 5px;
   box-shadow: 0 5px 8px rgba(0,0,0,0.15);
   color: $player-text-color;
   display: inline-block;
   line-height: 1.5625;
-  position: relative;
 }
 
 .player-controls {
@@ -366,32 +444,22 @@ $player-timeline-color: $player-border-color;
     }
   }
 }
-.player-timeline {
-  background-color: $player-timeline-color;
+.player-progress {
+  background-color: $player-progress-color;
+  cursor: pointer;
   height: 50%;
   min-width: 200px;
   position: relative;
 
-  .player-progress,
   .player-seeker {
+    background-color: $player-seeker-color;
     bottom: 0;
-    height: 100%;
     left: 0;
     position: absolute;
     top: 0;
   }
-
-  .player-progress {
-    background-color: $player-progress-color;
-    z-index: 1;
-  }
-
-  .player-seeker {
-    cursor: pointer;
-    width: 100%;
-    z-index: 2;
-  }
 }
+
 .player-time {
   display: flex;
   justify-content: space-between;
@@ -413,4 +481,5 @@ $player-timeline-color: $player-border-color;
   margin: 0 0 0 2px;
   width: 6rem;
 }
+
 </style>
