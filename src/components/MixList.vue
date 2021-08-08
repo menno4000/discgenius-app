@@ -58,13 +58,23 @@
               <div class="songListLabel">
                 <span>Song List:</span>
               </div>
-              <div class="songList">
+              <div id="song_list" class="songList">
                 <span class="songListItem" v-for="song in mix.mix.song_list">
                   {{song}}
                 </span>
               </div>
             </div>
-            <div class="transitionPointsWrapper">
+            <div id="scenario_list" class="songListWrapper">
+              <div class="songListLabel">
+                <span>Scenarios:</span>
+              </div>
+              <div class="songList">
+                <span class="songListItem" v-for="scenario in mix.mix.scenario_list">
+                  {{scenario}}
+                </span>
+              </div>
+            </div>
+            <div class="transitionPointsWrapper" v-if="mix.mix.transition_points !== undefined">
               <div class="transitionPointLabel">
                 <span>Transition Points:</span>
               </div>
@@ -72,8 +82,8 @@
                 <span v-for="tp_triplet in currentTransitionPoints">{{tp_triplet}}</span>
               </div>
             </div>
-            <div id="audio-player" class="player-wrapper">
-              <div class="player">
+            <div id="audio-player" class="player-wrapper" >
+              <div class="player" v-if="mix.mix.length !== 'tbd.'">
                 <div class="player-controls">
                   <div id="play">
                     <a v-on:click.prevent="playing = !playing"  :title="(playing) ? 'Pause' : 'Play'" href="#">
@@ -102,9 +112,9 @@
                   </div>
                 </div>
               </div>
-            <button class="deleteButton" v-on:click="deleteMix(mix.mix)">
-              Delete
-            </button>
+              <button class="deleteButton" v-on:click="deleteMix(mix.mix)">
+                Delete
+              </button>
             </div>
           </div>
         </v-expansion-panel-content>
@@ -142,7 +152,7 @@ export default{
       playing: false,
       previousVolume: 35,
       showVolume: false,
-      volume: 30,
+      volume: 20,
 
       currentTransitionPoints: ''
     }
@@ -205,7 +215,7 @@ export default{
   methods: {
     async pollMixes() {
       setInterval(() => {
-        if (this.mixes.filter(x => x.progress < 0).size > 0){
+        if (this.mixes.filter(x => x.progress < 100).size > 0){
           this.$store.dispatch('fetchMixes')
         }
       }, 60000)
@@ -262,19 +272,26 @@ export default{
     },
     async playbackMix(mix) {
       console.log('initiating mix playback from url: ',mix.url)
-      console.log(this.mixes)
       this.audio.src = mix.url
       this.currentMix = mix.url
       this.durationSeconds = Math.round(mix.length_seconds)
+      if (mix.length === "tbd."){
+        this.durationSeconds = 0
+      }
       console.log('loaded mix is ', this.durationSeconds, ' seconds long.')
       this.currentSeconds = 0
       this.playing = false
 
-      const transition_seconds = Array.from(mix.transition_points, tp => convertTimeHHMMSS(tp))
+      if (mix.transition_points.size > 0){
+        const transition_seconds = Array.from(mix.transition_points, tp => convertTimeHHMMSS(tp))
 
-      this.currentTransitionPoints = [].concat.apply([], transition_seconds.map(function(elem, i){
-        return i % 3 ? [] : [transition_seconds.slice(i, i + 3)]
-      }))
+        this.currentTransitionPoints = [].concat.apply([], transition_seconds.map(function(elem, i){
+          return i % 3 ? [] : [transition_seconds.slice(i, i + 3)]
+        }))
+      } else {
+        this.currentTransitionPoints = []
+      }
+
     }
   }
 }
@@ -337,13 +354,18 @@ export default{
 .songListWrapper{
   width: 80%;
   align-content: center;
+  margin-bottom: 10px;
 }
 .songListLabel{
   display: inline-block;
+  width: 20%;
+  align-content: center;
 }
 .songList{
   margin-left: 10px;
   display: inline-block;
+  width: 60%;
+  align-content: center;
 }
 .songListItem{
   margin-left: 10px;
@@ -354,10 +376,15 @@ export default{
 }
 .transitionPointLabel{
   display: inline-block;
+  width: 20%;
+  align-content: center;
+
 }
 .transitionPoints{
   margin-left: 10px;
   display: inline-block;
+  width: 60%;
+  align-content: center;
 }
 .downloadButton{
   display: inline-block;

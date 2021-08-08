@@ -39,14 +39,15 @@ const actions =  {
       async function pLoop(){
       setTimeout(async function() {
         await context.dispatch('fetchMixes')
-        const mix = context.state.mixes.filter(m => m.id === newMix.id)[0]
+        const mixes = context.getters.getMixes
+        const mix = mixes.filter(m => m.id === newMix.id)[0]
         context.commit('setProgress', mix.progress)
         if (context.state.currentProgress < 100) {
           await pLoop()
         } else {
           context.commit("refreshAvailableMixes")
         }
-      }, 10000)
+      }, 60)
     }
 
     await pLoop()
@@ -115,6 +116,9 @@ const actions =  {
         }
         if ('song_list' in m){
           newMix.song_list = m.song_list
+        }
+        if ('scenario_list' in m){
+          newMix.scenario_list = m.scenario_list
         }
         if ('transition_points' in m){
           newMix.transition_points = m.transition_points

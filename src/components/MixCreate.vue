@@ -166,23 +166,28 @@
             </label>
           </div>
         </div>
-        <div class="scenarioLegend">
-          <img src="@/assets/legend.png"
-               class="scenarioLegendImage" />
-        </div >
       </div>
       <div id="scenarioBlocks1">
         <div class="scenarioBlock">
           <button class="scenarioButton"
                   v-on:click="selectScenario('EQ_1.0')"
                   :disabled="scenario === 'EQ_1.0'">
-            <img class="scenarioPreview" src="@/assets/EQ.png"/>
+            EQ_1.0
           </button>
           <div v-if="scenario==='EQ_1.0'">
-            <div id="audio-player" class="player-wrapper">
+            <v-tooltip top nudge-bottom="10">
+              <template v-slot:activator="{ on, attrs }">
+                <img class="scenarioPreview" src="@/assets/EQ.png"
+                     v-bind="attrs"
+                     v-on="on"/>
+              </template>
+              <img src="@/assets/legend.png"
+                   class="scenarioLegendImage"/>
+            </v-tooltip>
+            <div id="audio-player1" class="player-wrapper">
               <div class="player">
                 <div class="player-controls">
-                  <div id="play">
+                  <div id="play1">
                     <a v-on:click.prevent="playing = !playing" :title="(playing) ? 'Pause' : 'Play'" href="#">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
                         <path v-if="!playing" fill="currentColor"
@@ -192,17 +197,16 @@
                       </svg>
                     </a>
                   </div>
-                  <div id="seek">
-                    <div class="player-timeline">
-                      <div :style="progressStyle" class="player-progress"></div>
-                      <div v-on:click="seek" class="player-seeker" title="Seek"></div>
+                  <div id="seek1">
+                    <div v-on:click="seek" class="player-progress" title="Time played : Total time">
+                      <div :style="{ width: percentComplete + '%' }" class="player-seeker"></div>
                     </div>
                     <div class="player-time">
-                      <div class="player-time-current">{{ currentSeconds | convertTimeHHMMSS(currentSeconds) }}</div>
-                      <div class="player-time-total">{{ durationSeconds | convertTimeHHMMSS(durationSeconds) }}</div>
+                      <div class="player-time-current">{{ currentTime }}</div>
+                      <div class="player-time-total">{{ durationTime }}</div>
                     </div>
                   </div>
-                  <div id="volume">
+                  <div id="volume1">
                     <a v-on:click.prevent="" v-on:mouseenter="showVolume = true" v-on:mouseleave="showVolume = false"
                        :title="volumeTitle" href="#">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -216,19 +220,61 @@
                 </div>
               </div>
             </div>
-            <div id="select-scenario">
-              <button class="selectScenarioButton">
-                Select
-              </button>
-            </div>
           </div>
         </div>
         <div class="scenarioBlock">
           <button class="scenarioButton"
                   v-on:click="selectScenario('EQ_1.1')"
                   :disabled="scenario === 'EQ_1.1'">
-            <img class="scenarioPreview" src="@/assets/EQ_cut.png"/>
+            EQ_1.1
           </button>
+          <div v-if="scenario==='EQ_1.1'">
+            <v-tooltip top nudge-bottom="10">
+              <template v-slot:activator="{ on, attrs }">
+                <img class="scenarioPreview" src="@/assets/EQ_cut.png"
+                     v-bind="attrs"
+                     v-on="on"/>
+              </template>
+              <img src="@/assets/legend.png"
+                   class="scenarioLegendImage"/>
+            </v-tooltip>
+            <div id="audio-player2" class="player-wrapper">
+              <div class="player">
+                <div class="player-controls">
+                  <div id="play2">
+                    <a v-on:click.prevent="playing = !playing" :title="(playing) ? 'Pause' : 'Play'" href="#">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path v-if="!playing" fill="currentColor"
+                              d="M15,10.001c0,0.299-0.305,0.514-0.305,0.514l-8.561,5.303C5.51,16.227,5,15.924,5,15.149V4.852c0-0.777,0.51-1.078,1.135-0.67l8.561,5.305C14.695,9.487,15,9.702,15,10.001z"/>
+                        <path v-else fill="currentColor"
+                              d="M15,3h-2c-0.553,0-1,0.048-1,0.6v12.8c0,0.552,0.447,0.6,1,0.6h2c0.553,0,1-0.048,1-0.6V3.6C16,3.048,15.553,3,15,3z M7,3H5C4.447,3,4,3.048,4,3.6v12.8C4,16.952,4.447,17,5,17h2c0.553,0,1-0.048,1-0.6V3.6C8,3.048,7.553,3,7,3z"/>
+                      </svg>
+                    </a>
+                  </div>
+                  <div id="seek2">
+                    <div v-on:click="seek" class="player-progress" title="Time played : Total time">
+                      <div :style="{ width: percentComplete + '%' }" class="player-seeker"></div>
+                    </div>
+                    <div class="player-time">
+                      <div class="player-time-current">{{ currentTime }}</div>
+                      <div class="player-time-total">{{ durationTime }}</div>
+                    </div>
+                  </div>
+                  <div id="volume2">
+                    <a v-on:click.prevent="" v-on:mouseenter="showVolume = true" v-on:mouseleave="showVolume = false"
+                       :title="volumeTitle" href="#">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path fill="currentColor"
+                              d="M19,13.805C19,14.462,18.462,15,17.805,15H1.533c-0.88,0-0.982-0.371-0.229-0.822l16.323-9.055C18.382,4.67,19,5.019,19,5.9V13.805z"/>
+                      </svg>
+                      <input v-model.lazy.number="volume" v-show="showVolume" class="player-volume" type="range" min="0"
+                             max="100"/>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div id="scenarioNames1">
@@ -244,15 +290,109 @@
           <button class="scenarioButton"
                   v-on:click="selectScenario('VFF_1.0')"
                   :disabled="scenario === 'VFF_1.0'">
-            <img class="scenarioPreview" src="@/assets/VFF.png"/>
+            VFF_1.0
           </button>
+          <div v-if="scenario==='VFF_1.0'">
+            <v-tooltip top nudge-bottom="10">
+              <template v-slot:activator="{ on, attrs }">
+                <img class="scenarioPreview" src="@/assets/VFF.png"
+                     v-bind="attrs"
+                     v-on="on"/>
+              </template>
+              <img src="@/assets/legend.png"
+                   class="scenarioLegendImage"/>
+            </v-tooltip>
+            <div id="audio-player3" class="player-wrapper">
+              <div class="player">
+                <div class="player-controls">
+                  <div id="play3">
+                    <a v-on:click.prevent="playing = !playing" :title="(playing) ? 'Pause' : 'Play'" href="#">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path v-if="!playing" fill="currentColor"
+                              d="M15,10.001c0,0.299-0.305,0.514-0.305,0.514l-8.561,5.303C5.51,16.227,5,15.924,5,15.149V4.852c0-0.777,0.51-1.078,1.135-0.67l8.561,5.305C14.695,9.487,15,9.702,15,10.001z"/>
+                        <path v-else fill="currentColor"
+                              d="M15,3h-2c-0.553,0-1,0.048-1,0.6v12.8c0,0.552,0.447,0.6,1,0.6h2c0.553,0,1-0.048,1-0.6V3.6C16,3.048,15.553,3,15,3z M7,3H5C4.447,3,4,3.048,4,3.6v12.8C4,16.952,4.447,17,5,17h2c0.553,0,1-0.048,1-0.6V3.6C8,3.048,7.553,3,7,3z"/>
+                      </svg>
+                    </a>
+                  </div>
+                  <div id="seek3">
+                    <div v-on:click="seek" class="player-progress" title="Time played : Total time">
+                      <div :style="{ width: percentComplete + '%' }" class="player-seeker"></div>
+                    </div>
+                    <div class="player-time">
+                      <div class="player-time-current">{{ currentTime }}</div>
+                      <div class="player-time-total">{{ durationTime }}</div>
+                    </div>
+                  </div>
+                  <div id="volume3">
+                    <a v-on:click.prevent="" v-on:mouseenter="showVolume = true" v-on:mouseleave="showVolume = false"
+                       :title="volumeTitle" href="#">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path fill="currentColor"
+                              d="M19,13.805C19,14.462,18.462,15,17.805,15H1.533c-0.88,0-0.982-0.371-0.229-0.822l16.323-9.055C18.382,4.67,19,5.019,19,5.9V13.805z"/>
+                      </svg>
+                      <input v-model.lazy.number="volume" v-show="showVolume" class="player-volume" type="range" min="0"
+                             max="100"/>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="scenarioBlock">
           <button class="scenarioButton"
                   v-on:click="selectScenario('VFF_1.1')"
                   :disabled="scenario === 'VFF_1.1'">
-            <img class="scenarioPreview" src="@/assets/VFF_cut.png"/>
+            VFF_1.1
           </button>
+          <div v-if="scenario==='VFF_1.1'">
+            <v-tooltip top nudge-bottom="10">
+              <template v-slot:activator="{ on, attrs }">
+                <img class="scenarioPreview" src="@/assets/VFF_cut.png"
+                     v-bind="attrs"
+                     v-on="on"/>
+              </template>
+              <img src="@/assets/legend.png"
+                   class="scenarioLegendImage"/>
+            </v-tooltip>
+            <div id="audio-player4" class="player-wrapper">
+              <div class="player">
+                <div class="player-controls">
+                  <div id="play4">
+                    <a v-on:click.prevent="playing = !playing" :title="(playing) ? 'Pause' : 'Play'" href="#">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path v-if="!playing" fill="currentColor"
+                              d="M15,10.001c0,0.299-0.305,0.514-0.305,0.514l-8.561,5.303C5.51,16.227,5,15.924,5,15.149V4.852c0-0.777,0.51-1.078,1.135-0.67l8.561,5.305C14.695,9.487,15,9.702,15,10.001z"/>
+                        <path v-else fill="currentColor"
+                              d="M15,3h-2c-0.553,0-1,0.048-1,0.6v12.8c0,0.552,0.447,0.6,1,0.6h2c0.553,0,1-0.048,1-0.6V3.6C16,3.048,15.553,3,15,3z M7,3H5C4.447,3,4,3.048,4,3.6v12.8C4,16.952,4.447,17,5,17h2c0.553,0,1-0.048,1-0.6V3.6C8,3.048,7.553,3,7,3z"/>
+                      </svg>
+                    </a>
+                  </div>
+                  <div id="seek4">
+                    <div v-on:click="seek" class="player-progress" title="Time played : Total time">
+                      <div :style="{ width: percentComplete + '%' }" class="player-seeker"></div>
+                    </div>
+                    <div class="player-time">
+                      <div class="player-time-current">{{ currentTime }}</div>
+                      <div class="player-time-total">{{ durationTime }}</div>
+                    </div>
+                  </div>
+                  <div id="volume4">
+                    <a v-on:click.prevent="" v-on:mouseenter="showVolume = true" v-on:mouseleave="showVolume = false"
+                       :title="volumeTitle" href="#">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path fill="currentColor"
+                              d="M19,13.805C19,14.462,18.462,15,17.805,15H1.533c-0.88,0-0.982-0.371-0.229-0.822l16.323-9.055C18.382,4.67,19,5.019,19,5.9V13.805z"/>
+                      </svg>
+                      <input v-model.lazy.number="volume" v-show="showVolume" class="player-volume" type="range" min="0"
+                             max="100"/>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div id="scenarioNames2">
@@ -311,7 +451,11 @@ import {v4 as uuidv4} from 'uuid'
 import LoginState from "@/components/LoginState";
 import DataService from "@/services/DataService";
 
+const convertTimeHHMMSS = (val) => {
+  let hhmmss = new Date(val * 1000).toISOString().substr(11, 8);
 
+  return hhmmss.indexOf("00:") === 0 ? hhmmss.substr(3) : hhmmss;
+};
 // TODO scenario preview clips with audio playback
 export default {
   components: {LoginState},
@@ -347,6 +491,7 @@ export default {
 
       defaultPreview:
           "https://res.cloudinary.com/dmf10fesn/video/upload/v1548882863/audio/Post_Malone_-_Wow._playvk.com.mp3",
+      audio: undefined,
       currentPreview: '',
       currentSeconds: 0,
       durationSeconds: 0,
@@ -357,6 +502,17 @@ export default {
       volume: 100
 
     }
+  },
+  mounted() {
+    this.audio = this.$el.querySelectorAll('audio')[0];
+    this.audio.addEventListener('timeupdate', this.update);
+    this.audio.addEventListener('loadeddata', this.load);
+    this.audio.addEventListener('pause', () => {
+      this.playing = false;
+    });
+    this.audio.addEventListener('play', () => {
+      this.playing = true;
+    });
   },
   computed: {
     convertExitPoint() {
@@ -403,6 +559,12 @@ export default {
       adjustedSong2Length = Math.round(adjustedSong2Length * 100) / 100
       return this.length1 + adjustedSong2Length;
     },
+    currentTime() {
+      return convertTimeHHMMSS(this.currentSeconds);
+    },
+    durationTime() {
+      return convertTimeHHMMSS(this.durationSeconds);
+    },
     percentComplete() {
       return parseInt(this.currentSeconds / this.durationSeconds * 100);
     },
@@ -417,15 +579,16 @@ export default {
     this.$store.dispatch('fetchMixes')
     this.$store.dispatch('fetchSongs')
   },
-  filters: {
-    convertTimeHHMMSS(val) {
-      console.log('incoming time (s): ', val)
-      let hhmmss = new Date(0).toISOString().substr(11, 8)
-      if (!isNaN(val)) {
-        hhmmss = new Date(val * 1000).toISOString().substr(11, 8);
+  watch: {
+    playing(value) {
+      if (value) {
+        return this.audio.play();
       }
-      return hhmmss.indexOf("00:") === 0 ? hhmmss.substr(3) : hhmmss;
-    }
+      this.audio.pause();
+    },
+    volume(value) {
+      this.audio.volume = this.volume / 100;
+    },
   },
   methods: {
     selectFirstSong() {
@@ -490,38 +653,38 @@ export default {
         await this.$store.dispatch('submitMix', newMix)
       }
     },
+
     load() {
-      if (this.$refs.audio.readyState >= 2) {
+      if (this.audio.readyState >= 2) {
         this.loaded = true;
+        this.durationSeconds = parseInt(this.audio.duration);
         return this.playing = false;
       }
       throw new Error('Failed to load sound file.');
     },
     seek(e) {
-      if (!this.loaded) return;
-      const bounds = e.target.getBoundingClientRect();
-      const seekPos = (e.clientX - bounds.left) / bounds.width;
-      const currentDuration = this.durationSeconds
-      const newTime = parseInt(currentDuration * seekPos);
-      console.log('new currentTime: ', newTime)
-      let player = document.getElementById('audio-driver')
-      player.currentTime = newTime;
-      console.log(player.currentTime)
+      if (!this.playing || e.target.tagName === 'SPAN') {
+        return;
+      }
+      const el = e.target.getBoundingClientRect();
+      const seekPos = (e.clientX - el.left) / el.width;
+      const newTime = parseInt(this.audio.duration * seekPos) + ".0";
+      this.audio.currentTime = newTime.toString()
     },
     stop() {
       this.playing = false;
-      this.$refs.audio.currentTime = 0;
+      this.audio.currentTime = 0;
     },
     update(e) {
-      this.currentSeconds = parseInt(this.$refs.audio.currentTime);
+      this.currentSeconds = parseInt(this.audio.currentTime);
     },
-    async playbackScenariosample(sample) {
-      console.log('initiating mix playback from url: ', mix.url)
-      console.log(this.mixes)
-      this.$refs.audio.src = mix.url
-      this.currentSong = mix.url
-      this.durationSeconds = Math.round(mix.length_seconds)
-      console.log('loaded mix is ', this.durationSeconds, ' seconds long.')
+    async playbackPreview(preview) {
+      console.log('initiating mix playback from url: ', preview)
+      this.audio.src = preview
+      this.currentMix = preview
+      this.durationSeconds = parseInt(this.audio.duration)
+      console.log('loaded preview is ', this.durationSeconds, ' seconds long.')
+
       this.currentSeconds = 0
       this.playing = false
     }
@@ -633,9 +796,11 @@ export default {
   outline: lightgrey solid thin;
 }
 
-
 .scenarioBlock {
   display: inline-block;
+  align-content: center;
+  align-items: center;
+  horiz-align: center;
   height: 30%;
   width: 40%;
   margin: 10px;
@@ -652,7 +817,7 @@ export default {
 
 .scenarioExplanation {
   display: inline-block;
-  width: 40%;
+  width: 75%;
   margin-right: 10px;
   text-align: center;
   align-content: center;
@@ -669,7 +834,8 @@ export default {
   display: inline-block;
   align-content: center;
 }
-.scenarioLegendImage{
+
+.scenarioLegendImage {
   display: inline-block;
   align-content: center;
   vertical-align: middle;
@@ -678,7 +844,8 @@ export default {
 
 .scenarioButton {
   background-color: transparent;
-  outline: lightgrey;
+  vertical-align: top;
+  outline: grey;
   width: 100%;
   margin: 10px;
   border-radius: 4px;
@@ -692,7 +859,8 @@ export default {
 }
 
 .scenarioPreview {
-  padding-right: 21px;
+  padding-left: 2px;
+  padding-right: 2px;
   height: 100%;
   width: 100%;
   horiz-align: center;
@@ -748,6 +916,7 @@ export default {
   padding: 15px 30px;
   border-radius: 4px;
 }
+
 .downloadButton:disabled {
   color: white;
   font-size: 16px;
@@ -771,20 +940,25 @@ export default {
 $player-bg: #fff;
 $player-border-color: darken($player-bg, 12%);
 $player-link-color: darken($player-bg, 75%);
-$player-progress-color: $player-link-color;
+$player-progress-color: $player-border-color;
 $player-text-color: $player-link-color;
-$player-timeline-color: $player-border-color;
+$player-seeker-color: $player-link-color;
+
+.player-wrapper {
+  align-items: center;
+  background-color: $player-bg;
+  display: flex;
+  justify-content: center;
+}
 
 .player {
   background-color: $player-bg;
-  border-radius: 5px;
   border: 1px solid $player-border-color;
+  border-radius: 5px;
   box-shadow: 0 5px 8px rgba(0, 0, 0, 0.15);
   color: $player-text-color;
   display: inline-block;
-  align-content: center;
   line-height: 1.5625;
-  position: relative;
 }
 
 .player-controls {
@@ -812,30 +986,19 @@ $player-timeline-color: $player-border-color;
   }
 }
 
-.player-timeline {
-  background-color: $player-timeline-color;
+.player-progress {
+  background-color: $player-progress-color;
+  cursor: pointer;
   height: 50%;
   min-width: 200px;
   position: relative;
 
-  .player-progress,
   .player-seeker {
+    background-color: $player-seeker-color;
     bottom: 0;
-    height: 100%;
     left: 0;
     position: absolute;
     top: 0;
-  }
-
-  .player-progress {
-    background-color: $player-progress-color;
-    z-index: 1;
-  }
-
-  .player-seeker {
-    cursor: pointer;
-    width: 100%;
-    z-index: 2;
   }
 }
 

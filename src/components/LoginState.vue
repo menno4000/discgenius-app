@@ -51,6 +51,7 @@ export default{
   border-radius: 4px;
 }
 .loginLabel{
+  padding-top: 10px;
   margin: 20px;
   align-content: center;
   align-self: center;

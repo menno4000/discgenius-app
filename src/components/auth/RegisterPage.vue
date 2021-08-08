@@ -25,8 +25,8 @@
             <input type="password" v-model="password_repeat" min="6" name="password_repeat" class="form-control" :class="{ 'is-invalid': submitted }" />
           </div>
       </div>
-      <button class="btn btn-primary" @click="handleSubmit">Register</button>
-      <router-link to="/login" class="btn btn-link">Cancel</router-link>
+      <button class="registerButton" @click="handleSubmit">Register</button>
+      <router-link to="/login" class="cancelButton">Cancel</router-link>
     </form>
 
     <p v-if="msg">{{ msg }}</p>
@@ -92,5 +92,23 @@ export default {
 .btn.btn-link{
   margin-left: 5px;
   margin-right: 5px;
+}
+
+.registerButton{
+  color: white;
+  font-size: 16px;
+  background-color: #00b9ff;
+  margin: 20px;
+  padding: 15px 30px;
+  border-radius: 4px;
+}
+.cancelButton{
+  color: black;
+  background-color: white;
+  outline-color: dimgrey;
+  outline-style: auto;
+  margin: 20px;
+  padding: 15px 30px;
+  border-radius: 4px;
 }
 </style>
