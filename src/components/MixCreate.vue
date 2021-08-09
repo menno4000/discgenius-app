@@ -184,6 +184,7 @@
               <img src="@/assets/legend.png"
                    class="scenarioLegendImage"/>
             </v-tooltip>
+            <div>Audio Sample for EQ 1 Transition</div>
             <div id="audio-player1" class="player-wrapper">
               <div class="player">
                 <div class="player-controls">
@@ -238,6 +239,7 @@
               <img src="@/assets/legend.png"
                    class="scenarioLegendImage"/>
             </v-tooltip>
+            <div>Audio Sample for EQ 1.1 Transition</div>
             <div id="audio-player2" class="player-wrapper">
               <div class="player">
                 <div class="player-controls">
@@ -302,6 +304,7 @@
               <img src="@/assets/legend.png"
                    class="scenarioLegendImage"/>
             </v-tooltip>
+            <div>Audio Sample for VFF 1 Transition</div>
             <div id="audio-player3" class="player-wrapper">
               <div class="player">
                 <div class="player-controls">
@@ -356,6 +359,7 @@
               <img src="@/assets/legend.png"
                    class="scenarioLegendImage"/>
             </v-tooltip>
+            <div>Audio Sample for VFF 1.1 Transition</div>
             <div id="audio-player4" class="player-wrapper">
               <div class="player">
                 <div class="player-controls">
@@ -425,8 +429,8 @@
           </button>
         </div>
         <div v-if="submitted" class="mixProgress">
-          <vue-ellipse-progress :progress="calcedProgress"
-                                :legend-value="calcedProgress"
+          <vue-ellipse-progress :progress="currentProgress"
+                                :legend-value="currentProgress"
                                 :size="50"
                                 color="#76b900">
 
@@ -434,7 +438,7 @@
         </div>
         <div v-if="submitted" class="mixDownload">
           <button class="downloadButton"
-                  :disabled="calcedProgress < 100">Download
+                  :disabled="currentProgress < 100">Download
           </button>
         </div>
       </div>
@@ -533,8 +537,8 @@ export default {
     mixes() {
       return this.$store.getters.getAvailableMixes
     },
-    calcedProgress() {
-      return this.$store.state.currentProgress;
+    currentProgress(){
+      return this.$store.getters.getCurrentProgress
     },
     mixNumSongs() {
       let numSongs1 = 1;
@@ -624,7 +628,7 @@ export default {
     selectScenario(pName) {
       this.scenario = pName;
       this.previewSelected = true;
-      this.previewUrl = previewName
+      this.previewUrl = pName
     },
     async submit() {
       this.submitted = true;
@@ -642,18 +646,19 @@ export default {
       if (submit_response === undefined) {
         alert("Mix Creation failed")
       } else {
-        const mixId = submit_response.data.message.split(':')[1].trim()
-        const newMix = new Mix(
-            this.mixName,
-            this.mixNumSongs,
-            this.mixTempo,
-            mixId,
-            this.progress = 10
-        )
-        await this.$store.dispatch('submitMix', newMix)
+        console.log(submit_response)
+        const mixId = submit_response.data.message.split(':')[2].trim()
+        // await this.$store.dispatch('submitMix', mixId)
+        await this.pollMix(mixId)
       }
     },
-
+    async pollMix(id) {
+      setInterval(() => {
+        if (this.currentProgress < 100){
+          this.$store.dispatch('fetchMixes')
+        }
+      }, 60)
+    },
     load() {
       if (this.audio.readyState >= 2) {
         this.loaded = true;

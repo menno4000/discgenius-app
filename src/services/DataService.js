@@ -22,21 +22,11 @@ function uploadSong(filename, extension, file) {
     // let formData = new FormData()
     // formData.append('file', file)
     return axios.post(
-        API_URL+'upload',
+        API_URL + 'upload',
         file,
         {
             params: params,
         }
-    ).then(function (response){
-        // console.log(response)
-        return response
-    }).catch(function (error) {
-        console.log(error)
-    })
-}
-function getSongs() {
-    return axios.get(
-        API_URL+'songs'
     ).then(function (response) {
         // console.log(response)
         return response
@@ -44,43 +34,69 @@ function getSongs() {
         console.log(error)
     })
 }
-function getSongFile(songName){
+
+function getSongs() {
     return axios.get(
-        API_URL+'getSong',
+        API_URL + 'songs'
+    ).then(function (response) {
+        // console.log(response)
+        return response
+    }).catch(function (error) {
+        console.log(error)
+    })
+}
+
+function getSongFile(songName) {
+    return axios.get(
+        API_URL + 'getSong',
         {
             params: {
                 name: songName
             }
         }
-    ).then(function(response) {
+    ).then(function (response) {
         return response
-    }).catch(function(error){
+    }).catch(function (error) {
         console.log(error)
     })
 }
-function deleteSong(songId){
+
+function deleteSong(songId) {
     return axios.delete(
-        API_URL+'songs',
+        API_URL + 'songs',
         {
             params: {
                 target_id: songId
             }
         }
-    ).then(function(response){
+    ).then(function (response) {
         return response
-    }).catch(function(error){
+    }).catch(function (error) {
         console.log(error)
     })
 }
+
 function getMixes() {
     return axios.get(
-        API_URL+'mixes'
-    ).then(function (response){
+        API_URL + 'mixes'
+    ).then(function (response) {
         return response
-    }).catch(function(error){
+    }).catch(function (error) {
         console.log(error)
     })
 }
+
+function getMix(mix_id) {
+    console.log("fetching mix of id:"+mix_id)
+    return axios.get(
+    API_URL + 'getMixObject/' + mix_id)
+    .then(function (response) {
+        return response
+    }).catch(function (error) {
+        console.log(error)
+    })
+}
+
 function createMix(mixName,
                    aName,
                    bName,
@@ -89,7 +105,7 @@ function createMix(mixName,
                    numSongsA,
                    numSongsB,
                    entryPoint,
-                   exitPoint){
+                   exitPoint) {
 
     const query_params = {
         song_a_name: aName,
@@ -106,44 +122,45 @@ function createMix(mixName,
     }
     console.log(query_params)
     return axios.post(
-        API_URL+'createMix',
+        API_URL + 'createMix',
         null,
         {
             params: query_params,
         }
-    ).then(function(response){
+    ).then(function (response) {
         return response
-    }).catch(function(error){
+    }).catch(function (error) {
         console.log(error)
     })
 }
 
-function getMixFile(mixName){
+function getMixFile(mixName) {
     return axios.get(
-        API_URL+'getMix',
+        API_URL + 'getMix',
         {
             params: {
                 name: mixName
             }
         }
-    ).then(function (response){
+    ).then(function (response) {
         console.log(response)
         return response
-    }).catch(function(error){
+    }).catch(function (error) {
         console.log(error)
     })
 }
-function deleteMix(mixId){
+
+function deleteMix(mixId) {
     return axios.delete(
-        API_URL+'mixes',
+        API_URL + 'mixes',
         {
             params: {
                 target_id: mixId
             }
         }
-    ).then(function (response){
+    ).then(function (response) {
         return response
-    }).catch(function(error){
+    }).catch(function (error) {
         console.log(error)
     })
 }

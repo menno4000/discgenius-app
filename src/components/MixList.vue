@@ -218,7 +218,7 @@ export default{
         if (this.mixes.filter(x => x.progress < 100).size > 0){
           this.$store.dispatch('fetchMixes')
         }
-      }, 60000)
+      }, 60)
     },
     async deleteMix(mix){
       if (confirm("Do you really want to delete Mix "+mix.title+"?")){
@@ -228,6 +228,7 @@ export default{
         else {
           console.log(delete_response)
           await this.$store.commit('deleteMix', mix)
+          this.$store.dispatch('fetchMixes')
         }
       }
     },
@@ -281,8 +282,9 @@ export default{
       console.log('loaded mix is ', this.durationSeconds, ' seconds long.')
       this.currentSeconds = 0
       this.playing = false
+      console.log(mix)
 
-      if (mix.transition_points.size > 0){
+      if (mix.transition_points !== []){
         const transition_seconds = Array.from(mix.transition_points, tp => convertTimeHHMMSS(tp))
 
         this.currentTransitionPoints = [].concat.apply([], transition_seconds.map(function(elem, i){
