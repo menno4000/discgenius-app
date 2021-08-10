@@ -31,10 +31,10 @@
                          @click="playbackMix(mix.mix)">
         <v-expansion-panel-header>
           <div class="songDiv">
-            <div class="mixNameLabel">{{mix.mix.title}}</div>
-            <div class="mixNumSongsLabel">{{mix.mix.numSongs}}</div>
-            <div class="mixLengthLabel">{{mix.mix.length}}</div>
-            <div class="mixTempoLabel">{{mix.mix.tempo}}</div>
+            <div class="mixNameLabel">{{ mix.mix.title }}</div>
+            <div class="mixNumSongsLabel">{{ mix.mix.numSongs }}</div>
+            <div class="mixLengthLabel">{{ mix.mix.length }}</div>
+            <div class="mixTempoLabel">{{ mix.mix.tempo }}</div>
             <vue-ellipse-progress :progress="mix.progress"
                                   :legend="true"
                                   :legend-value="mix.progress"
@@ -60,7 +60,7 @@
               </div>
               <div id="song_list" class="songList">
                 <span class="songListItem" v-for="song in mix.mix.song_list">
-                  {{song}}
+                  {{ song }}
                 </span>
               </div>
             </div>
@@ -70,7 +70,7 @@
               </div>
               <div class="songList">
                 <span class="songListItem" v-for="scenario in mix.mix.scenario_list">
-                  {{scenario}}
+                  {{ scenario }}
                 </span>
               </div>
             </div>
@@ -79,17 +79,21 @@
                 <span>Transition Points:</span>
               </div>
               <div class="transitionPoints">
-                <span v-for="tp_triplet in currentTransitionPoints">{{tp_triplet}}</span>
+                <div v-for="tp_triplet in currentTransitionPoints">
+                  <span>{{ tp_triplet }}</span>
+                </div>
               </div>
             </div>
-            <div id="audio-player" class="player-wrapper" >
+            <div id="audio-player" class="player-wrapper">
               <div class="player" v-if="mix.mix.length !== 'tbd.'">
                 <div class="player-controls">
                   <div id="play">
-                    <a v-on:click.prevent="playing = !playing"  :title="(playing) ? 'Pause' : 'Play'" href="#">
+                    <a v-on:click.prevent="playing = !playing" :title="(playing) ? 'Pause' : 'Play'" href="#">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                        <path v-if="!playing" fill="currentColor" d="M15,10.001c0,0.299-0.305,0.514-0.305,0.514l-8.561,5.303C5.51,16.227,5,15.924,5,15.149V4.852c0-0.777,0.51-1.078,1.135-0.67l8.561,5.305C14.695,9.487,15,9.702,15,10.001z"/>
-                        <path v-else fill="currentColor" d="M15,3h-2c-0.553,0-1,0.048-1,0.6v12.8c0,0.552,0.447,0.6,1,0.6h2c0.553,0,1-0.048,1-0.6V3.6C16,3.048,15.553,3,15,3z M7,3H5C4.447,3,4,3.048,4,3.6v12.8C4,16.952,4.447,17,5,17h2c0.553,0,1-0.048,1-0.6V3.6C8,3.048,7.553,3,7,3z"/>
+                        <path v-if="!playing" fill="currentColor"
+                              d="M15,10.001c0,0.299-0.305,0.514-0.305,0.514l-8.561,5.303C5.51,16.227,5,15.924,5,15.149V4.852c0-0.777,0.51-1.078,1.135-0.67l8.561,5.305C14.695,9.487,15,9.702,15,10.001z"/>
+                        <path v-else fill="currentColor"
+                              d="M15,3h-2c-0.553,0-1,0.048-1,0.6v12.8c0,0.552,0.447,0.6,1,0.6h2c0.553,0,1-0.048,1-0.6V3.6C16,3.048,15.553,3,15,3z M7,3H5C4.447,3,4,3.048,4,3.6v12.8C4,16.952,4.447,17,5,17h2c0.553,0,1-0.048,1-0.6V3.6C8,3.048,7.553,3,7,3z"/>
                       </svg>
                     </a>
                   </div>
@@ -103,11 +107,14 @@
                     </div>
                   </div>
                   <div id="volume">
-                    <a v-on:click.prevent="" v-on:mouseenter="showVolume = true" v-on:mouseleave="showVolume = false" :title="volumeTitle" href="#">
+                    <a v-on:click.prevent="" v-on:mouseenter="showVolume = true" v-on:mouseleave="showVolume = false"
+                       :title="volumeTitle" href="#">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                        <path fill="currentColor" d="M19,13.805C19,14.462,18.462,15,17.805,15H1.533c-0.88,0-0.982-0.371-0.229-0.822l16.323-9.055C18.382,4.67,19,5.019,19,5.9V13.805z"/>
+                        <path fill="currentColor"
+                              d="M19,13.805C19,14.462,18.462,15,17.805,15H1.533c-0.88,0-0.982-0.371-0.229-0.822l16.323-9.055C18.382,4.67,19,5.019,19,5.9V13.805z"/>
                       </svg>
-                      <input v-model.lazy.number="volume" v-show="showVolume" class="player-volume" type="range" min="0" max="100"/>
+                      <input v-model.lazy.number="volume" v-show="showVolume" class="player-volume" type="range" min="0"
+                             max="100"/>
                     </a>
                   </div>
                 </div>
@@ -120,7 +127,12 @@
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
-    <audio ref="audio" id="audio-driver" :src="currentMix"  preload="none" style="display: none;"></audio>
+    <div class="refreshDiv">
+      <button @click="refresh" class="refreshButton">
+        <img alt="refresh" src="@/assets/icons8-refresh-24.png"/>
+      </button>
+    </div>
+    <audio ref="audio" id="audio-driver" :src="currentMix" preload="none" style="display: none;"></audio>
   </div>
 </template>
 
@@ -136,8 +148,8 @@ const convertTimeHHMMSS = (val) => {
 };
 
 // TODO unfold for songs in mix, mix playback
-export default{
-  data(){
+export default {
+  data() {
     return {
       defaultSong:
           "https://res.cloudinary.com/dmf10fesn/video/upload/v1548882863/audio/Post_Malone_-_Wow._playvk.com.mp3",
@@ -161,18 +173,22 @@ export default{
     this.audio = this.$el.querySelectorAll('audio')[0];
     this.audio.addEventListener('timeupdate', this.update);
     this.audio.addEventListener('loadeddata', this.load);
-    this.audio.addEventListener('pause', () => { this.playing = false; });
-    this.audio.addEventListener('play', () => { this.playing = true; });
+    this.audio.addEventListener('pause', () => {
+      this.playing = false;
+    });
+    this.audio.addEventListener('play', () => {
+      this.playing = true;
+    });
     // console.log(this.mixes)
   },
   computed: {
-    mixes(){
+    mixes() {
       return this.$store.getters.getMixes;
     },
     mixesWithProgress() {
       const mixesWithProg = []
-      for (let i = 0, len = this.mixes.length; i < len; i++){
-        if (this.mixes[i] !== null){
+      for (let i = 0, len = this.mixes.length; i < len; i++) {
+        if (this.mixes[i] !== null) {
           mixesWithProg.push({
             mix: this.mixes[i],
             progress: this.mixes[i].progress
@@ -191,7 +207,7 @@ export default{
       return parseInt(this.currentSeconds / this.durationSeconds * 100);
     },
     progressStyle() {
-      return { width: `${this.percentComplete}%` };
+      return {width: `${this.percentComplete}%`};
     },
     volumeTitle() {
       return `Volume (${this.volume}%)`;
@@ -205,7 +221,9 @@ export default{
   },
   watch: {
     playing(value) {
-      if (value) { return this.audio.play(); }
+      if (value) {
+        return this.audio.play();
+      }
       this.audio.pause();
     },
     volume(value) {
@@ -213,15 +231,18 @@ export default{
     },
   },
   methods: {
+    async refresh(){
+      this.$store.dispatch('fetchMixes')
+    },
     async pollMixes() {
       setInterval(() => {
-        if (this.mixes.filter(x => x.progress < 100).size > 0){
+        if (this.mixes.filter(x => x.progress < 100).size > 0) {
           this.$store.dispatch('fetchMixes')
         }
-      }, 60)
+      }, 1000)
     },
-    async deleteMix(mix){
-      if (confirm("Do you really want to delete Mix "+mix.title+"?")){
+    async deleteMix(mix) {
+      if (confirm("Do you really want to delete Mix " + mix.title + "?")) {
         const delete_response = await DataService.deleteMix(mix.id)
         if (delete_response === undefined)
           alert("Mix Deletion failed")
@@ -232,13 +253,12 @@ export default{
         }
       }
     },
-    async downloadMix(mix){
+    async downloadMix(mix) {
       console.log(mix)
       const download_response = await DataService.getMixFile(mix.title_mp3)
       if (download_response === undefined)
         alert("Mix Download failed")
       else {
-        console.log(download_response)
         let blob = new Blob([download_response.data])
         let link = document.createElement('a')
         link.href = window.URL.createObjectURL(blob)
@@ -272,11 +292,11 @@ export default{
       this.currentSeconds = parseInt(this.audio.currentTime);
     },
     async playbackMix(mix) {
-      console.log('initiating mix playback from url: ',mix.url)
+      console.log('initiating mix playback from url: ', mix.url)
       this.audio.src = mix.url
       this.currentMix = mix.url
       this.durationSeconds = Math.round(mix.length_seconds)
-      if (mix.length === "tbd."){
+      if (mix.length === "tbd.") {
         this.durationSeconds = 0
       }
       console.log('loaded mix is ', this.durationSeconds, ' seconds long.')
@@ -284,10 +304,10 @@ export default{
       this.playing = false
       console.log(mix)
 
-      if (mix.transition_points !== []){
+      if (mix.transition_points !== []) {
         const transition_seconds = Array.from(mix.transition_points, tp => convertTimeHHMMSS(tp))
 
-        this.currentTransitionPoints = [].concat.apply([], transition_seconds.map(function(elem, i){
+        this.currentTransitionPoints = [].concat.apply([], transition_seconds.map(function (elem, i) {
           return i % 3 ? [] : [transition_seconds.slice(i, i + 3)]
         }))
       } else {
@@ -304,18 +324,21 @@ export default{
   width: 100%;
   height: 20px;
 }
-.songDiv{
+
+.songDiv {
   width: 100%;
   margin-bottom: 20px;
 }
-.mixNameLabel{
+
+.mixNameLabel {
   display: inline-block;
   text-align: center;
   vertical-align: middle;
   margin-left: 10%;
   width: 200px;
 }
-.mixTempoLabel{
+
+.mixTempoLabel {
   display: inline-block;
   vertical-align: middle;
   text-align: center;
@@ -324,7 +347,8 @@ export default{
   width: 50px;
   margin-left: 10px;
 }
-.mixLengthLabel{
+
+.mixLengthLabel {
   display: inline-block;
   vertical-align: middle;
   text-align: center;
@@ -333,7 +357,8 @@ export default{
   width: 50px;
   margin-left: 10px;
 }
-.mixNumSongsLabel{
+
+.mixNumSongsLabel {
   display: inline-block;
   vertical-align: middle;
   text-align: center;
@@ -342,53 +367,61 @@ export default{
   margin-left: 10px;
   align-content: center;
 }
-.mixProgress{
+
+.mixProgress {
   align-content: center;
   display: inline-block;
   vertical-align: middle;
   margin-left: 20px;
   margin-right: 20px;
 }
-.progressPlaceholder{
+
+.progressPlaceholder {
   padding: 40px;
 }
 
-.songListWrapper{
+.songListWrapper {
   width: 80%;
   align-content: center;
   margin-bottom: 10px;
 }
-.songListLabel{
+
+.songListLabel {
   display: inline-block;
   width: 20%;
   align-content: center;
 }
-.songList{
+
+.songList {
   margin-left: 10px;
   display: inline-block;
   width: 60%;
   align-content: center;
 }
-.songListItem{
+
+.songListItem {
   margin-left: 10px;
 }
 
-.transitionPointsWrapper{
+.transitionPointsWrapper {
   width: 80%;
 }
-.transitionPointLabel{
+
+.transitionPointLabel {
   display: inline-block;
   width: 20%;
   align-content: center;
 
 }
-.transitionPoints{
+
+.transitionPoints {
   margin-left: 10px;
   display: inline-block;
   width: 60%;
   align-content: center;
 }
-.downloadButton{
+
+.downloadButton {
   display: inline-block;
   vertical-align: middle;
   color: white;
@@ -398,7 +431,8 @@ export default{
   padding: 10px 20px;
   border-radius: 4px;
 }
-.downloadButton:disabled{
+
+.downloadButton:disabled {
   color: white;
   font-size: 16px;
   background-color: grey;
@@ -406,6 +440,7 @@ export default{
   padding: 10px 20px;
   border-radius: 4px;
 }
+
 .downloadButtonPlaceholder {
   color: white;
   font-size: 16px;
@@ -414,7 +449,8 @@ export default{
   padding: 10px 20px;
   border-radius: 4px;
 }
-.deleteButton{
+
+.deleteButton {
   display: inline-block;
   vertical-align: middle;
   align-self: center;
@@ -425,6 +461,22 @@ export default{
   padding: 10px 20px;
   border-radius: 4px;
 }
+
+.refreshDiv {
+  align-content: center;
+}
+.refreshButton {
+  display: inline-block;
+  vertical-align: middle;
+  align-self: center;
+  font-size: 16px;
+  background-color: white;
+  margin: 20px;
+  border-radius: 4px;
+  width: 20px;
+}
+
+
 $player-bg: #fff;
 $player-border-color: darken($player-bg, 12%);
 $player-link-color: darken($player-bg, 75%);
@@ -443,7 +495,7 @@ $player-seeker-color: $player-link-color;
   background-color: $player-bg;
   border: 1px solid $player-border-color;
   border-radius: 5px;
-  box-shadow: 0 5px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 5px 8px rgba(0, 0, 0, 0.15);
   color: $player-text-color;
   display: inline-block;
   line-height: 1.5625;
@@ -473,6 +525,7 @@ $player-seeker-color: $player-link-color;
     }
   }
 }
+
 .player-progress {
   background-color: $player-progress-color;
   cursor: pointer;

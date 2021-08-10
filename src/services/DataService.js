@@ -8,6 +8,7 @@ export default {
     getSongFile,
     deleteSong,
     getMixes,
+    getMix,
     getMixFile,
     deleteMix,
     createMix
@@ -87,9 +88,8 @@ function getMixes() {
 }
 
 function getMix(mix_id) {
-    console.log("fetching mix of id:"+mix_id)
     return axios.get(
-    API_URL + 'getMixObject/' + mix_id)
+    API_URL + 'getMixObject/' + mix_id, {timeout: 10000})
     .then(function (response) {
         return response
     }).catch(function (error) {
@@ -136,11 +136,8 @@ function createMix(mixName,
 
 function getMixFile(mixName) {
     return axios.get(
-        API_URL + 'getMix',
-        {
-            params: {
-                name: mixName
-            }
+        API_URL + 'getMixMedia/' + mixName, {
+            responseType: "blob"
         }
     ).then(function (response) {
         console.log(response)

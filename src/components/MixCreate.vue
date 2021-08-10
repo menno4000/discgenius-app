@@ -443,8 +443,7 @@
         </div>
       </div>
     </div>
-    <audio ref="audio" id="audio-driver" :src="currentPreview" v-on:timeupdate="update" v-on:loadeddata="load"
-           v-on:pause="playing = false" v-on:seek="playing = true" preload="auto" style="display: none;"></audio>
+    <audio ref="audio" id="audio-driver" :src="currentPreview" preload="none" style="display: none;"></audio>
   </div>
 </template>
 
@@ -454,13 +453,14 @@ import Mix from '../model/Mix'
 import {v4 as uuidv4} from 'uuid'
 import LoginState from "@/components/LoginState";
 import DataService from "@/services/DataService";
-
+const API_URL = 'http://localhost:9001/';
 const convertTimeHHMMSS = (val) => {
   let hhmmss = new Date(val * 1000).toISOString().substr(11, 8);
 
   return hhmmss.indexOf("00:") === 0 ? hhmmss.substr(3) : hhmmss;
 };
-// TODO scenario preview clips with audio playback
+// TODO fix scenario preview audio playback
+// TODO fix progress bar not updating at all
 export default {
   components: {LoginState},
   data() {
@@ -493,8 +493,6 @@ export default {
         trail: '#c4d48a',
       },
 
-      defaultPreview:
-          "https://res.cloudinary.com/dmf10fesn/video/upload/v1548882863/audio/Post_Malone_-_Wow._playvk.com.mp3",
       audio: undefined,
       currentPreview: '',
       currentSeconds: 0,
@@ -580,8 +578,11 @@ export default {
     }
   },
   created() {
-    this.$store.dispatch('fetchMixes')
-    this.$store.dispatch('fetchSongs')
+    if (this.$store.getters.isLoggedIn) {
+      this.$store.dispatch('fetchMixes')
+      this.$store.dispatch('fetchSongs')
+
+    }
   },
   watch: {
     playing(value) {
@@ -628,7 +629,7 @@ export default {
     selectScenario(pName) {
       this.scenario = pName;
       this.previewSelected = true;
-      this.previewUrl = pName
+      this.playbackPreview(pName)
     },
     async submit() {
       this.submitted = true;
@@ -646,18 +647,19 @@ export default {
       if (submit_response === undefined) {
         alert("Mix Creation failed")
       } else {
-        console.log(submit_response)
         const mixId = submit_response.data.message.split(':')[2].trim()
+        console.log('created mix object id: ', mixId)
         // await this.$store.dispatch('submitMix', mixId)
+        await this.$store.commit('setProgress', 0)
         await this.pollMix(mixId)
       }
     },
     async pollMix(id) {
       setInterval(() => {
         if (this.currentProgress < 100){
-          this.$store.dispatch('fetchMixes')
+          this.$store.dispatch('fetchMix', id)
         }
-      }, 60)
+      }, 10000)
     },
     load() {
       if (this.audio.readyState >= 2) {
@@ -684,10 +686,13 @@ export default {
       this.currentSeconds = parseInt(this.audio.currentTime);
     },
     async playbackPreview(preview) {
-      console.log('initiating mix playback from url: ', preview)
-      this.audio.src = preview
+      const preview_url = API_URL + "mixPreview/" + preview + ".mp3"
+      // const preview_url = '@/assets/preview_'+preview+'.mp3'
+      this.currentPreview = preview_url
+      console.log('initiating mix playback from url: ', preview_url)
+      this.audio.src = preview_url
       this.currentMix = preview
-      this.durationSeconds = parseInt(this.audio.duration)
+      this.durationSeconds = parseInt('48')
       console.log('loaded preview is ', this.durationSeconds, ' seconds long.')
 
       this.currentSeconds = 0

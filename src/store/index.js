@@ -45,6 +45,7 @@ const actions = {
         let {newMix} = payload
 
         function progressLoop() {
+            let loops = 0
             setTimeout(function () {
                 context.commit("increaseProgress", 10)
                 context.commit({
@@ -54,7 +55,9 @@ const actions = {
                 })
                 context.commit("refreshAvailableMixes")
                 if (context.state.currentProgress < 100) {
-                    progressLoop()
+                    if (loops < 1000) {
+                        progressLoop()
+                    }
                 }
             }, 10000)
         }
@@ -117,12 +120,14 @@ const actions = {
         context.commit("setMixes", _mixes)
     },
     async fetchMix(context, mix_id) {
-        const mix_response = await DataService.getMixes(mix_id)
+        console.log('fetching mix progress for mix ', mix_id)
+        const mix_response = await DataService.getMix(mix_id)
         console.log('mix progress update: ', mix_response)
-        const mix_data = mix_response.data.data[0][0]
+        const mix_data = mix_response.data.data[0]
+        console.log(mix_data)
         const mix_progress = mix_data.progress
-        console.log(mix_progress)
-        context.commit("updateMixProgress", mix_progress)
+        console.log('new mix progress: ', mix_progress)
+        context.commit("setProgress", mix_progress)
     },
 
     login: ({commit, dispatch}, {token, user}) => {
