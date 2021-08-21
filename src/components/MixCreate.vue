@@ -443,11 +443,25 @@
         </div>
       </div>
     </div>
+    <div class="resetDiv" v-if="submitted">
+      <button @click="reset" class="resetButton">
+        <div>
+          <span>Create new Mix</span>
+        </div>
+        <div>
+          <img alt="reset" src="@/assets/icons8-refresh-24.png"/>
+        </div>
+      </button>
+    </div>
     <audio ref="audio" id="audio-driver" :src="currentPreview" preload="none" style="display: none;"></audio>
   </div>
 </template>
 
 <script>
+
+//TODO implement download button
+//TODO fix mix preview playback
+//TODO preselect first scenario
 import Song from '../model/Song'
 import Mix from '../model/Mix'
 import {v4 as uuidv4} from 'uuid'
@@ -494,6 +508,7 @@ export default {
       },
 
       audio: undefined,
+
       currentPreview: '',
       currentSeconds: 0,
       durationSeconds: 0,
@@ -596,6 +611,25 @@ export default {
     },
   },
   methods: {
+    reset(){
+      this.submitted = false
+      this.previewSelected = false
+      this.scenario = ""
+      this.currentPreview = ""
+      this.mixName = ""
+      this.songsSelected = false
+      this.tempo1 = 0.0
+      this.tempo2 = 0.0
+      this.length1 = 0
+      this.length2 = 0
+      this.numSongs1 = 0
+      this.numSongs2 = 0
+      this.tempoOverride = false
+      this.customTempo = 120.0
+      this.entryPoint = 30.0
+      this.exitPoint = 70.0
+
+    },
     selectFirstSong() {
       this.tempo1 = this.selected1.tempo
       this.length1 = this.selected1.length
@@ -629,7 +663,8 @@ export default {
     selectScenario(pName) {
       this.scenario = pName;
       this.previewSelected = true;
-      this.playbackPreview(pName)
+      const pFileName = pName.replace('.', '') + '.mp3'
+      this.playbackPreview(pFileName)
     },
     async submit() {
       this.submitted = true;
@@ -665,7 +700,7 @@ export default {
       if (this.audio.readyState >= 2) {
         this.loaded = true;
         this.durationSeconds = parseInt(this.audio.duration);
-        return this.playing = false;
+        return this.playing = true;
       }
       throw new Error('Failed to load sound file.');
     },
@@ -676,6 +711,7 @@ export default {
       const el = e.target.getBoundingClientRect();
       const seekPos = (e.clientX - el.left) / el.width;
       const newTime = parseInt(this.audio.duration * seekPos) + ".0";
+      console.log(newTime.toString())
       this.audio.currentTime = newTime.toString()
     },
     stop() {
@@ -686,17 +722,18 @@ export default {
       this.currentSeconds = parseInt(this.audio.currentTime);
     },
     async playbackPreview(preview) {
-      const preview_url = API_URL + "mixPreview/" + preview + ".mp3"
+      const preview_url = API_URL + "mixPreview/" + preview
       // const preview_url = '@/assets/preview_'+preview+'.mp3'
-      this.currentPreview = preview_url
-      console.log('initiating mix playback from url: ', preview_url)
+      console.log('initiating preview playback from url: ', preview_url)
+      this.loaded = false
       this.audio.src = preview_url
-      this.currentMix = preview
-      this.durationSeconds = parseInt('48')
+      this.currentPreview = preview_url
+      this.durationSeconds = Math.round(47.0)
       console.log('loaded preview is ', this.durationSeconds, ' seconds long.')
 
       this.currentSeconds = 0
       this.playing = false
+
     }
   },
 }
@@ -945,6 +982,19 @@ export default {
   border-radius: 4px;
   display: inline-block;
   align-content: center;
+}
+.resetDiv {
+  align-content: center;
+}
+.resetButton{
+  display: inline-block;
+  vertical-align: middle;
+  align-self: center;
+  font-size: 16px;
+  background-color: white;
+  margin: 20px;
+  border-radius: 4px;
+  width: 100px;
 }
 
 $player-bg: #fff;

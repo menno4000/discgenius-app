@@ -216,7 +216,7 @@ export default {
       if (this.audio.readyState >= 2) {
         this.loaded = true;
         this.durationSeconds = parseInt(this.audio.duration);
-        return this.playing = false;
+        return this.playing = true;
       }
       throw new Error('Failed to load sound file.');
     },
