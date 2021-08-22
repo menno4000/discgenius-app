@@ -65,13 +65,14 @@ export default class Mix {
     }
 
 
-    constructor(title, title_wav, numSongs, tempo, id, progress, length, length_seconds) {
+    constructor(title, title_wav, numSongs, tempo, id, progress, progressPercent, length, length_seconds) {
         this.title = title;
         this._title_wav = title_wav
         this.numSongs = numSongs;
         this.tempo = tempo;
         this.id = id;
         this.progress = progress;
+        this.progressPercent = progressPercent;
         if (length && length_seconds) {
             this._length = length;
             this._length_seconds = length_seconds;

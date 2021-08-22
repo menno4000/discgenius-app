@@ -147,7 +147,6 @@ const convertTimeHHMMSS = (val) => {
   return hhmmss.indexOf("00:") === 0 ? hhmmss.substr(3) : hhmmss;
 };
 
-// TODO unfold for songs in mix, mix playback
 export default {
   data() {
     return {
@@ -191,7 +190,8 @@ export default {
         if (this.mixes[i] !== null) {
           mixesWithProg.push({
             mix: this.mixes[i],
-            progress: this.mixes[i].progress
+            progress: this.mixes[i].progress,
+            progressPercent: this.mixes[i].progressPercent
           })
         }
       }

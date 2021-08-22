@@ -98,6 +98,7 @@ const actions = {
                     m.bpm,
                     m.id,
                     m.progress,
+                    (m.progress.toString()+'%'),
                     getLengthFromSeconds(m.length),
                     m.length)
                 if ('title_mp3' in m) {
@@ -230,6 +231,9 @@ const getters = {
     },
     getCurrentProgress: state => {
         return state.currentProgress;
+    },
+    getCurrentProgressPercent: state => {
+        return (state.currentProgress.toString())+'%';
     }
 }
 

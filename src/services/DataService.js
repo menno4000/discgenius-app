@@ -14,7 +14,6 @@ export default {
     createMix
 }
 
-//TODO remove excessive console logging
 function uploadSong(filename, extension, file) {
     const params = {
         filename: filename,
@@ -140,7 +139,6 @@ function getMixFile(mixName) {
             responseType: "blob"
         }
     ).then(function (response) {
-        console.log(response)
         return response
     }).catch(function (error) {
         console.log(error)

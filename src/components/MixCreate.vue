@@ -438,6 +438,7 @@
         </div>
         <div v-if="submitted" class="mixDownload">
           <button class="downloadButton"
+                  @click="download(mixId)"
                   :disabled="currentProgress < 100">Download
           </button>
         </div>
@@ -459,14 +460,12 @@
 
 <script>
 
-//TODO implement download button
-//TODO fix mix preview playback
-//TODO preselect first scenario
 import Song from '../model/Song'
 import Mix from '../model/Mix'
 import {v4 as uuidv4} from 'uuid'
 import LoginState from "@/components/LoginState";
 import DataService from "@/services/DataService";
+
 const API_URL = 'http://localhost:9001/';
 const convertTimeHHMMSS = (val) => {
   let hhmmss = new Date(val * 1000).toISOString().substr(11, 8);
@@ -492,6 +491,7 @@ export default {
       previewSelected: false,
       scenario: "",
       mixName: "",
+      mixId: "",
       submitted: false,
       tempoOverride: false,
       customTempo: 120.0,
@@ -550,8 +550,11 @@ export default {
     mixes() {
       return this.$store.getters.getAvailableMixes
     },
-    currentProgress(){
+    currentProgress() {
       return this.$store.getters.getCurrentProgress
+    },
+    currentProgressPercent() {
+      return this.$store.getters.getCurrentProgressPercent
     },
     mixNumSongs() {
       let numSongs1 = 1;
@@ -611,7 +614,7 @@ export default {
     },
   },
   methods: {
-    reset(){
+    reset() {
       this.submitted = false
       this.previewSelected = false
       this.scenario = ""
@@ -657,7 +660,9 @@ export default {
       if (this.length2 !== 0) numSongs++;
       if (numSongs === 2) {
         this.songsSelected = true
-
+        this.scenario = 'EQ_1.0';
+        this.playbackPreview('EQ_10.mp3')
+        this.previewSelected = true;
       }
     },
     selectScenario(pName) {
@@ -682,20 +687,41 @@ export default {
       if (submit_response === undefined) {
         alert("Mix Creation failed")
       } else {
-        const mixId = submit_response.data.message.split(':')[2].trim()
-        console.log('created mix object id: ', mixId)
+        this.mixId = submit_response.data.message.split(':')[2].trim()
+        console.log('created mix object id: ', this.mixId)
         // await this.$store.dispatch('submitMix', mixId)
         await this.$store.commit('setProgress', 0)
-        await this.pollMix(mixId)
+        await this.pollMix(this.mixId)
       }
     },
     async pollMix(id) {
       setInterval(() => {
-        if (this.currentProgress < 100){
+        if (this.currentProgress < 100) {
           this.$store.dispatch('fetchMix', id)
         }
       }, 10000)
     },
+    async download(id) {
+      const mix_response = await DataService.getMix(id)
+      if (mix_response === undefined)
+        alert("Mix Not Found")
+      else {
+        console.log(mix_response)
+        const mix_title_mp3 = mix_response.data.data[0].title_mp3
+        const download_response = await DataService.getMixFile(mix_title_mp3)
+        if (download_response === undefined)
+          alert("Mix Download failed")
+        else {
+          let blob = new Blob([download_response.data])
+          let link = document.createElement('a')
+          link.href = window.URL.createObjectURL(blob)
+          link.setAttribute('download', mix_title_mp3)
+          document.body.appendChild(link)
+          link.click()
+        }
+      }
+    },
+    // audio player methods
     load() {
       if (this.audio.readyState >= 2) {
         this.loaded = true;
@@ -755,7 +781,7 @@ export default {
   vertical-align: middle;
   width: 200px;
   margin: 10px;
-  outline-color: grey;
+  outline-color: darkgray;
   outline-width: 1px;
   padding: 5px;
   background: lightgray;
@@ -892,7 +918,7 @@ export default {
 .scenarioButton {
   background-color: transparent;
   vertical-align: top;
-  outline: grey;
+  outline: darkgray;
   width: 100%;
   margin: 10px;
   border-radius: 4px;
@@ -983,10 +1009,12 @@ export default {
   display: inline-block;
   align-content: center;
 }
+
 .resetDiv {
   align-content: center;
 }
-.resetButton{
+
+.resetButton {
   display: inline-block;
   vertical-align: middle;
   align-self: center;
