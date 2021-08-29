@@ -14,7 +14,7 @@ import Mix from "@/model/Mix";
 Vue.use(Vuex)
 
 const initialState = getDefaultState()
-const API_URL = 'http://localhost:9001/';
+const API_URL = 'https://discgenius.f4.htw-berlin.de/';
 
 function getLengthFromSeconds(length) {
     let minutes = Math.floor(length / 60)

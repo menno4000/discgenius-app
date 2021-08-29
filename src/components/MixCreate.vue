@@ -466,7 +466,7 @@ import {v4 as uuidv4} from 'uuid'
 import LoginState from "@/components/LoginState";
 import DataService from "@/services/DataService";
 
-const API_URL = 'http://localhost:9001/';
+const API_URL = 'https://discgenius.f4.htw-berlin.de/';
 const convertTimeHHMMSS = (val) => {
   let hhmmss = new Date(val * 1000).toISOString().substr(11, 8);
 
@@ -516,8 +516,8 @@ export default {
       playing: false,
       previousVolume: 35,
       showVolume: false,
-      volume: 100
-
+      volume: 100,
+      polling: false,
     }
   },
   mounted() {
@@ -631,7 +631,7 @@ export default {
       this.customTempo = 120.0
       this.entryPoint = 30.0
       this.exitPoint = 70.0
-
+      this.polling = false;
     },
     selectFirstSong() {
       this.tempo1 = this.selected1.tempo
@@ -690,13 +690,14 @@ export default {
         this.mixId = submit_response.data.message.split(':')[2].trim()
         console.log('created mix object id: ', this.mixId)
         // await this.$store.dispatch('submitMix', mixId)
+        this.polling = true
         await this.$store.commit('setProgress', 0)
         await this.pollMix(this.mixId)
       }
     },
     async pollMix(id) {
       setInterval(() => {
-        if (this.currentProgress < 100) {
+        if (this.currentProgress < 100 && this.polling === true) {
           this.$store.dispatch('fetchMix', id)
         }
       }, 10000)

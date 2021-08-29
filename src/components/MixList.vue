@@ -232,7 +232,8 @@ export default {
   },
   methods: {
     async refresh(){
-      this.$store.dispatch('fetchMixes')
+      console.log('refreshing...')
+      await this.$store.dispatch('fetchMixes')
     },
     async pollMixes() {
       setInterval(() => {

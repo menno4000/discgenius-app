@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = 'http://localhost:9001/';
+const API_URL = 'https://discgenius.f4.htw-berlin.de/';
 
 export default {
     uploadSong,

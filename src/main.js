@@ -10,6 +10,7 @@ import VueCollapse from "vue2-collapse";
 import Vuetify from "vuetify";
 import 'vuetify/dist/vuetify.min.css';
 
+
 Vue.config.productionTip = false
 Vue.use(VueEllipseProgress);
 Vue.use(vueSmoothScroll)
