@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
+import LoginPage from "@/components/auth/LoginPage";
+import RegisterPage from "@/components/auth/RegisterPage";
 
 Vue.use(VueRouter)
 
@@ -10,6 +12,8 @@ const routes = [
     name: 'Home',
     component: Home
   },
+  { path: '/login', component: LoginPage },
+  { path: '/register', component: RegisterPage },
   {
     path: '/about',
     name: 'About',
@@ -19,11 +23,26 @@ const routes = [
     component: function () {
       return import(/* webpackChunkName: "about" */ '../views/About.vue')
     }
-  }
+  },
+  { path: '*' , redirect: '/'}
 ]
 
 const router = new VueRouter({
+  mode: "history",
+  base: process.env.BASE_URL,
   routes
 })
+
+// router.beforeEach((to, from, next) => {
+//   const publicPages = ['/login', '/register']
+//   const authRequired = !publicPages.includes(to.path)
+//   const loggedIn = localStorage.getItem('user')
+//
+//   if (authRequired && !loggedIn){
+//     return next('/login')
+//   }
+//   next()
+// })
+
 
 export default router

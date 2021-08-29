@@ -9,10 +9,10 @@
     <div>
       <h3>En</h3>
       <div>
-        <label class="aboutLabel">Currently, none of the functionality of the DiscGenius API are actually available through this Frontend.</label>
+        <label class="aboutLabel">You are experiencing a Prototype for the application, where DiscGenius core API functions are for the first time accessible through a graphical user interface.</label>
       </div>
       <div>
-        <label class="aboutLabel">You are looking at a Click Dummy for the application, where DiscGenius functions are yet to be connected and design choices are subject to change.  </label>
+        <label class="aboutLabel">Certain Features of the App act as Placeholder for more sophisticated Input Options of a final Application Release. Your feedback towards anything you see and interact with is greatly appreciated.</label>
       </div>
       <div>
         <label class="aboutLabel">Please take your time to check out all available pages and design elements, especially Previews of Mix Transitions and Progress identifiers. </label>
@@ -24,11 +24,12 @@
     <div class="spacer"/>
     <div>
       <h3>De</h3>
+
       <div>
-        <label class="aboutLabel">Im Moment sind keine der Funktionen der DiscGenius API tatsächlich durch diese Benutzeroberfläche bedienbar.</label>
+        <label class="aboutLabel">Der aktuelle Stand repräsentiert einen Prototypen für die Applikation, der die Hauptfunktionen der DiscGenius API mit einer g.</label>
       </div>
       <div>
-        <label class="aboutLabel">Der aktuelle Stand repräsentiert einen sogenannten "Click Dummy" für die Applikation, d.h. die Bedienelemente werden in naher Zukunft mit der DiscGenius API verbunden. Das Design der Oberfläche ist nicht final.</label>
+        <label class="aboutLabel">Im Moment sind keine der Funktionen der DiscGenius API tatsächlich durch diese Benutzeroberfläche bedienbar.</label>
       </div>
       <div>
         <label class="aboutLabel">Bitte nehmen sie sich die Zeit, die einzelnen Bedienelemente auf den verschiedenen Bereichen der Benutzeroberfläche zu untersuchen und deren Bedienbarkeit einzuschätzen. Insbesondere die Vorschau der Mix-Übergänge (Transitions) und die Anzeigen für Bearbeitungsfortschritt sind interessant für die weitere Entwicklung.</label>
@@ -41,7 +42,7 @@
     <div class="spacer"/>
     <div>
       <a href="https://docs.google.com/forms/d/e/1FAIpQLScEs4FB9LakvCr2D_jM3kfy4AO7TzKUlNWXKlR_afcbLt8hQg/viewform?usp=sf_link">
-        Fragebogen Heuritische Evaluation
+        Fragebogen Heuristische Evaluation
       </a>
     </div>
     <div>
