@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-const API_URL = 'https://discgenius.f4.htw-berlin.de/auth/';
+// const API_URL = 'https://discgenius.f4.htw-berlin.de/auth/';
+const API_URL = 'http://localhost:9001/auth/';
 
 export default {
     login,
