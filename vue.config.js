@@ -14,7 +14,8 @@ module.exports = {
     //   key: fs.readFileSync('./certs/privkey.pem'),
     //   cert: fs.readFileSync('./certs/cert.pem')
     // },
-    proxy: 'https://menno4000.github.io/discgenius-app'
+    proxy: 'https://menno4000.github.io/discgenius-app',
+    headers: { "Access-Control-Allow-Origin": "*" }
   },
 
 }
