@@ -466,8 +466,8 @@ import {v4 as uuidv4} from 'uuid'
 import LoginState from "@/components/LoginState";
 import DataService from "@/services/DataService";
 
-// const API_URL = 'https://discgenius.f4.htw-berlin.de/';
-const API_URL = 'http://localhost:9001/';
+const API_URL = 'https://discgenius.f4.htw-berlin.de/';
+// const API_URL = 'http://localhost:9001/';
 const convertTimeHHMMSS = (val) => {
   let hhmmss = new Date(val * 1000).toISOString().substr(11, 8);
 
