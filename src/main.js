@@ -17,6 +17,7 @@ Vue.use(vueSmoothScroll)
 Vue.use(Vuetify)
 Vue.use(VueCollapse)
 
+Axios.defaults.headers.common['Access-Control-Allow-Origin'] = "*"
 Axios.defaults.headers.common['Authorization'] = `Bearer ${store.state.token}`;
 
 new Vue({

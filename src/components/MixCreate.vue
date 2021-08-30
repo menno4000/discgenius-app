@@ -445,6 +445,9 @@
       </div>
     </div>
     <div class="resetDiv" v-if="submitted">
+      <div>
+        <span>Mix was created and will be available for downloading here or in the Mix List view, where you'll also find Metadata for the Mix.  </span>
+      </div>
       <button @click="reset" class="resetButton">
         <div>
           <span>Create new Mix</span>
@@ -515,9 +518,9 @@ export default {
       durationSeconds: 0,
       loaded: false,
       playing: false,
-      previousVolume: 35,
+      previousVolume: 20,
       showVolume: false,
-      volume: 100,
+      volume: 20,
       polling: false,
     }
   },
@@ -698,10 +701,14 @@ export default {
     },
     async pollMix(id) {
       setInterval(() => {
-        if (this.currentProgress < 100 && this.polling === true) {
-          this.$store.dispatch('fetchMix', id)
+        if (this.currentProgress < 100) {
+          if (this.polling){
+            this.$store.dispatch('fetchMix', id)
+          } else {
+            this.polling = false
+          }
         }
-      }, 10000)
+      }, 60000)
     },
     async download(id) {
       const mix_response = await DataService.getMix(id)

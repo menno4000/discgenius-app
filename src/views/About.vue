@@ -15,7 +15,11 @@
         <label class="aboutLabel">Certain Features of the App act as Placeholder for more sophisticated Input Options of a final Application Release. Your feedback towards anything you see and interact with is greatly appreciated.</label>
       </div>
       <div>
-        <label class="aboutLabel">Please take your time to check out all available pages and design elements, especially Previews of Mix Transitions and Progress identifiers. </label>
+        <label class="aboutLabel">Please take your time to check out all available pages and design elements, especially Previews of Mix Transitions and Progress identifiers. Some Errors are to be expected.</label>
+      </div>
+
+      <div>
+        <label class="aboutLabel">Best results are achieved with songs of any electronic music genre and a constant tempo. Choosing music outside these parameters may incur failed mix creations or unexpected results.</label>
       </div>
       <div>
         <label class="aboutLabel">Thank you for taking a look at the current state of the Frontend and for any feedback you can provide.</label>
@@ -29,7 +33,10 @@
         <label class="aboutLabel">Der aktuelle Stand repräsentiert einen Prototypen für die Applikation, der die Hauptfunktionen der DiscGenius API mit einer g.</label>
       </div>
       <div>
-        <label class="aboutLabel">Im Moment sind keine der Funktionen der DiscGenius API tatsächlich durch diese Benutzeroberfläche bedienbar.</label>
+        <label class="aboutLabel">Die Funktionen der API sind zwar bedienbar, Fehler und mangelnde Reaktivität auf Benutzereingaben werden aber höchstwahrscheinlich auftreten. Feedback über den Fragebogen wäre sehr erwünscht. </label>
+      </div>
+      <div>
+        <label class="aboutLabel">Beste ergebnisse werden mit elektronischer Musik mit gleichbleibendem Tempo erzielt. Bei Musikstücken ausserhalb dieser Parameter sind diverse Fehlverhalten zu erwarten.</label>
       </div>
       <div>
         <label class="aboutLabel">Bitte nehmen sie sich die Zeit, die einzelnen Bedienelemente auf den verschiedenen Bereichen der Benutzeroberfläche zu untersuchen und deren Bedienbarkeit einzuschätzen. Insbesondere die Vorschau der Mix-Übergänge (Transitions) und die Anzeigen für Bearbeitungsfortschritt sind interessant für die weitere Entwicklung.</label>
@@ -41,8 +48,8 @@
     </div>
     <div class="spacer"/>
     <div>
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLScEs4FB9LakvCr2D_jM3kfy4AO7TzKUlNWXKlR_afcbLt8hQg/viewform?usp=sf_link">
-        Fragebogen Heuristische Evaluation
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSfrBMhdiND9Yq3dTkFa6Bw1HzuSuWIXpTkCc3EfB27PHn-VIA/viewform?usp=sf_link">
+        Fragebogen Prototyp
       </a>
     </div>
     <div>

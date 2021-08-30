@@ -5,7 +5,7 @@
     <form @submit.prevent="handleSubmit">
       <div class="grid-container">
           <div class="grid-item">
-            <label>Username</label>
+            <label>E-Mail</label>
           </div>
           <div class="grid-item">
             <input type="text" v-model="username" name="username" class="form-control" :class="{ 'is-invalid': submitted }" />
