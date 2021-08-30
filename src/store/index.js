@@ -15,6 +15,7 @@ Vue.use(Vuex)
 
 const initialState = getDefaultState()
 const API_URL = 'https://discgenius.f4.htw-berlin.de/';
+// const API_URL = 'http://localhost:9001/';
 
 function getLengthFromSeconds(length) {
     let minutes = Math.floor(length / 60)
