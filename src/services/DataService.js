@@ -135,8 +135,9 @@ function createMix(mixName,
 }
 
 function getMixFile(mixName) {
+    const mixNameMp3 = mixName.substring(0, (mixName.length-3))+'mp3'
     return axios.get(
-        API_URL + 'getMixMedia/' + mixName, {
+        API_URL + 'getMixMedia/' + mixNameMp3, {
             responseType: "blob"
         }
     ).then(function (response) {
