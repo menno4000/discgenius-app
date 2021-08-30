@@ -1,4 +1,4 @@
-const fs = require('fs');
+// const fs = require('fs');
 
 
 module.exports = {
@@ -10,11 +10,11 @@ module.exports = {
       : '/',
   devServer: {
     port: 8080,
-    https: {
-      key: fs.readFileSync('./certs/privkey.pem'),
-      cert: fs.readFileSync('./certs/cert.pem')
-    },
-    public: 'https://discgenius.f4.htw-berlin.de'
+    // https: {
+    //   key: fs.readFileSync('./certs/privkey.pem'),
+    //   cert: fs.readFileSync('./certs/cert.pem')
+    // },
+    proxy: 'https://menno4000.github.io/discgenius-app'
   },
 
 }
