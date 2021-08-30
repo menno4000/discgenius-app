@@ -121,9 +121,9 @@ export default {
       durationSeconds: 0,
       loaded: false,
       playing: false,
-      previousVolume: 35,
+      previousVolume: 20,
       showVolume: false,
-      volume: 30
+      volume: 20
     }
   },
   mounted() {
