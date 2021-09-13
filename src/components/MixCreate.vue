@@ -1,9 +1,6 @@
 <template>
   <div>
     <div class="spacer"/>
-    <div>
-      <span>Mix creation currently results in corrupted audio files. You may be notified when service becomes available again. </span>
-    </div>
     <div id="songSelect">
       <div class="stepDescription">
         <span>1. Select Songs for the new Mix</span>
