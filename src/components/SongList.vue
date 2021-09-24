@@ -15,7 +15,7 @@
           </label>
         </div>
         <div class="songUploadDiv">
-          <button class="uploadButton" v-on:click="uploadSong()">
+          <button class="uploadButton" v-on:click="uploadSong()" :disabled="uploadInProgress">
             Upload
           </button>
         </div>
@@ -123,7 +123,8 @@ export default {
       playing: false,
       previousVolume: 20,
       showVolume: false,
-      volume: 20
+      volume: 20,
+      uploadInProgress: false
     }
   },
   mounted() {
@@ -192,6 +193,7 @@ export default {
       this.file = this.$refs.songFile.files[0]
     },
     async uploadSong() {
+      this.uploadInProgress = true
       const song_filename = this.file.name
       const song_data = song_filename.split('.')
       const song_name = song_data[0]
@@ -199,6 +201,7 @@ export default {
       const song_upload_response = await DataService.uploadSong(song_name, song_extension, this.file)
       if (song_upload_response === undefined) {
         alert("Song upload failed")
+        this.uploadInProgress = false
       } else {
         console.log(song_upload_response)
         const song = new Song(
@@ -209,6 +212,7 @@ export default {
         )
         await this.$store.commit('addSong', song)
         this.uploading = false
+        this.uploadInProgress = false
         await this.$store.dispatch("fetchSongs")
       }
     },
