@@ -52,17 +52,8 @@
         Fragebogen Prototyp
       </a>
     </div>
-    <div>
-      <span>Wenn ihr meiner Note helfen wollt:</span>
-    </div>
-    <div>
-      <a href="https://docs.google.com/forms/d/e/1FAIpQLSfJNuUcNzDqzZjd-GzLfD7gI3oNLeAdIntuETfIYbaz9R6ANw/viewform?usp=sf_link">
-        Demografie-Fragebogen
-      </a>
-    </div>
-    <div>
       <span>
-        2021 Max Lüdemann
+        2021 Max Lüdemann, HTW Berlin
       </span>
     </div>
   </div>
